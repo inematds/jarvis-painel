@@ -1,0 +1,5 @@
+estado.json
+bom_dia.txt
+__pycache__/
+.pytest_cache/
+*.pyc

@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JARVIS — painel</title>
+<meta name="description" content="Painel do seu Jarvis: mostra seus robôs, timers e filas num lugar e fala com você em português. Só lê; nada é executado.">
+<style>
+:root{
+  --bg:#040a17; --bg2:#081430; --painel:rgba(10,28,58,.62); --linha:rgba(95,227,255,.22);
+  --ciano:#5fe3ff; --ciano2:#2bb8e6; --gelo:#e8f7ff; --mut:#8fb2c9; --alerta:#ffb020; --ok:#5fe3ff;
+  --mono:ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Inter,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:radial-gradient(ellipse at 50% 40%,#0b2148 0%,var(--bg) 62%) fixed,var(--bg);color:var(--gelo);
+  font:15px/1.45 var(--sans);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(95,227,255,.035) 0 1px,transparent 1px 3px);z-index:0}
+.app{position:relative;z-index:1;display:grid;grid-template-rows:auto 1fr auto;min-height:100vh;max-width:1600px;margin:0 auto;padding:14px 18px 16px;gap:14px}
+/* topo */
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--linha);padding-bottom:10px}
+.marca{font:700 13px var(--mono);letter-spacing:.32em;color:var(--ciano)}
+.relogio{margin-left:auto;font:600 22px var(--mono);letter-spacing:.06em;color:var(--gelo)}
+.data{font:12px var(--mono);color:var(--mut);letter-spacing:.12em;text-transform:uppercase}
+.selo{font:600 11px var(--mono);letter-spacing:.16em;text-transform:uppercase;border:1px solid var(--linha);color:var(--ciano);
+  background:transparent;border-radius:999px;padding:6px 12px;cursor:pointer}
+.selo.desl{color:var(--mut)}
+.selo:focus-visible,button:focus-visible{outline:2px solid var(--ciano);outline-offset:2px}
+/* meio */
+main{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,1.1fr) minmax(0,1fr);gap:16px;align-items:stretch;min-height:0}
+.painel{background:var(--painel);border:1px solid var(--linha);border-radius:14px;padding:14px 14px 10px;display:flex;flex-direction:column;
+  min-height:0;max-height:calc(100vh - 230px);transition:opacity .5s;position:relative}
+.painel::after{content:"";position:absolute;top:-1px;left:16px;width:56px;height:2px;background:var(--ciano);box-shadow:0 0 12px var(--ciano)}
+.painel h2{margin:0 0 4px;font:700 12px var(--mono);letter-spacing:.24em;text-transform:uppercase;color:var(--ciano)}
+.painel .sub{margin:0 0 10px;font-size:12px;color:var(--mut)}
+.lista{list-style:none;margin:0;padding:0 4px 0 0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--ciano2) transparent}
+.lista li{display:grid;grid-template-columns:12px minmax(0,1fr) auto;gap:2px 10px;align-items:start;padding:8px 2px;border-bottom:1px solid rgba(95,227,255,.09)}
+.ponto{width:9px;height:9px;border-radius:50%;margin-top:6px;background:var(--ok);box-shadow:0 0 8px var(--ok)}
+.ponto.falhou{background:var(--alerta);box-shadow:0 0 10px var(--alerta);animation:pisca 1.2s infinite}
+.ponto.rodando{background:#fff;box-shadow:0 0 10px #fff;animation:pisca .8s infinite}
+.ponto.aguardando{background:transparent;border:1px solid var(--mut);box-shadow:none}
+@keyframes pisca{50%{opacity:.35}}
+.nome{font:600 13px var(--mono);color:var(--gelo);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acao{grid-column:2/4;font-size:12px;color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rot{font:600 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--mut);white-space:nowrap}
+.rot.falhou{color:var(--alerta)}
+.exemplo{font:600 12px var(--mono);color:var(--alerta);border:1px solid var(--alerta);border-radius:4px;padding:0 4px;margin-left:6px}
+.esp li{grid-template-columns:minmax(0,1fr);gap:6px}
+.esp .titulo{font-size:13px;color:var(--gelo);overflow-wrap:anywhere}
+.esp .titulo.falha{color:var(--alerta)}
+.esp .botoes{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.esp button{font:600 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;background:transparent;color:var(--ciano);
+  border:1px solid var(--linha);border-radius:8px;padding:5px 10px;cursor:pointer;min-height:30px}
+.esp button:hover{border-color:var(--ciano);background:rgba(95,227,255,.08)}
+.esp li.marcado{opacity:.5}
+.esp .marca-tela{font:11px var(--mono);color:var(--mut)}
+.aviso{font-size:14px;color:var(--mut);border-top:1px solid var(--linha);margin:8px 0 0;padding-top:8px}
+/* núcleo */
+.nucleo{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:380px}
+#cv{width:100%;max-width:520px;aspect-ratio:1/1;display:block}
+.centro{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;text-align:center}
+.centro .nomeia{font:800 clamp(20px,2.5vw,34px) var(--mono);letter-spacing:.34em;margin-right:-.34em;color:var(--gelo);text-shadow:0 0 18px var(--ciano)}
+.centro .status{margin-top:8px;font:12px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ciano);max-width:48%}
+.contas{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-top:6px;font:12px var(--mono);color:var(--mut)}
+.contas b{color:var(--gelo);font-size:15px}
+.contas .al b{color:var(--alerta)}
+/* barra de comando */
+footer{display:grid;gap:10px}
+.resposta{min-height:3em;font:15px/1.5 var(--mono);color:var(--gelo);border-left:2px solid var(--ciano);padding:4px 0 4px 12px;overflow-wrap:anywhere}
+.resposta .cursor{display:inline-block;width:.55em;height:1.05em;background:var(--ciano);vertical-align:-2px;animation:pisca 1s infinite}
+.barra{display:flex;gap:10px;flex-wrap:wrap;align-items:center;border:1px solid var(--linha);border-radius:12px;padding:8px;background:rgba(6,18,40,.7)}
+.barra .pr{font:700 12px var(--mono);color:var(--ciano);padding:0 6px;letter-spacing:.2em}
+.barra button{flex:1 1 140px;font:600 13px var(--sans);color:var(--gelo);background:rgba(95,227,255,.07);border:1px solid var(--linha);
+  border-radius:10px;padding:11px 12px;cursor:pointer;min-height:44px}
+.barra button:hover,.barra button.on{border-color:var(--ciano);background:rgba(95,227,255,.16);box-shadow:0 0 14px rgba(95,227,255,.25) inset}
+.barra kbd{font:11px var(--mono);color:var(--mut);margin-left:6px}
+/* foco */
+body.foco .painel{opacity:.15}
+body.foco .painel:hover{opacity:.9}
+/* partida */
+#partida{position:fixed;inset:0;z-index:10;background:rgba(4,10,23,.35);display:flex;align-items:flex-end;justify-content:center;padding-bottom:14vh;transition:opacity .6s;pointer-events:none}
+body.partindo .painel,body.partindo footer,body.partindo .contas,body.partindo header{opacity:0}
+header,footer,.contas{transition:opacity .8s}
+#partida.fim{opacity:0;pointer-events:none}
+#partida pre{font:16px/1.9 var(--mono);text-shadow:0 0 12px #000;color:var(--ciano);margin:0;padding:0 20px;white-space:pre-wrap;max-width:100%}
+@media (max-width:980px){
+  main{grid-template-columns:minmax(0,1fr)}
+  .nucleo{order:-1;min-height:0}
+  #cv{max-width:340px}
+  .painel{max-height:none}
+  .lista{max-height:52vh}
+  .relogio{font-size:18px}
+  .app{padding:12px 16px 14px}
+  footer{position:sticky;bottom:0;z-index:5;margin:0 -16px -14px;padding:10px 16px 12px;background:var(--bg);box-shadow:0 -18px 18px var(--bg)}
+  .resposta{min-height:0;max-height:6.2em;overflow-y:auto;font-size:14px}
+  .barra button{flex:1 1 40%;padding:9px 8px;font-size:13px}
+}
+@media (prefers-reduced-motion:reduce){.ponto.falhou,.ponto.rodando,.resposta .cursor{animation:none}}
+</style>
+</head>
+<body class="partindo">
+<div id="partida" aria-hidden="true"><pre id="partidaTxt"></pre></div>
+<div class="app">
+  <header>
+    <span class="marca" id="marca">JARVIS · PAINEL</span>
+    <span class="data" id="data"></span>
+    <span class="relogio" id="relogio">--:--</span>
+    <button class="selo" id="voz" type="button" aria-pressed="true">Voz: ligada</button>
+  </header>
+
+  <main>
+    <section class="painel" id="pSistemas" aria-labelledby="hSis">
+      <h2 id="hSis">Sistemas</h2>
+      <p class="sub" id="subSis">lendo…</p>
+      <ul class="lista" id="listaSis"></ul>
+    </section>
+
+    <section class="nucleo" aria-label="Núcleo do Jarvis">
+      <canvas id="cv" width="520" height="520" aria-hidden="true"></canvas>
+      <div class="centro">
+        <div class="nomeia" id="nomeIA">JARVIS</div>
+        <div class="status" id="status">inicializando</div>
+      </div>
+      <div class="contas" id="contas"></div>
+    </section>
+
+    <section class="painel" id="pEsp" aria-labelledby="hEsp">
+      <h2 id="hEsp">Esperando você</h2>
+      <p class="sub" id="subEsp">lendo…</p>
+      <ul class="lista esp" id="listaEsp"></ul>
+      <p class="aviso">Aprovar e Depois só marcam nesta tela (ficam guardados neste navegador). Nada é executado.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="resposta" id="resposta" aria-live="polite"></div>
+    <div class="barra" role="toolbar" aria-label="Atalhos">
+      <span class="pr">&gt;_</span>
+      <button type="button" data-cmd="bomdia">Bom dia<kbd>1</kbd></button>
+      <button type="button" data-cmd="status">Status<kbd>2</kbd></button>
+      <button type="button" data-cmd="espera">O que espera<kbd>3</kbd></button>
+      <button type="button" data-cmd="foco" id="bFoco" aria-pressed="false">Modo foco<kbd>4</kbd></button>
+    </div>
+  </footer>
+</div>
+
+<script>
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+const CHAVE = "jarvis-painel:marcas";
+const REDUZ = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let estado = null, bomDiaTxt = null, falando = false, vozLigada = true, ondaAte = 0;
+let marcas = {};
+try { marcas = JSON.parse(localStorage.getItem(CHAVE) || "{}"); } catch (e) { marcas = {}; }
+try { vozLigada = localStorage.getItem("jarvis-painel:voz") !== "0"; } catch (e) {}
+
+/* ---------- dados ---------- */
+function exemplo() {
+  const agora = Date.now(), iso = ms => new Date(ms).toISOString();
+  return { nome: "você", assistente: "JARVIS", exemploTudo: true,
+    resumo: { sistemas: 3, timers: 3, ok: 1, falhou: 1, rodando: 0, aguardando: 1, esperando: 2, exemplos: 5 },
+    sistemas: [
+      { nome: "robo-relatorio", descricao: "exemplo — relatório da manhã", estado: "ok", ultima: iso(agora - 36e5), exemplo: true },
+      { nome: "robo-backup", descricao: "exemplo — cópia de segurança", estado: "falhou", ultima: iso(agora - 72e5), exemplo: true },
+      { nome: "robo-fila-videos", descricao: "exemplo — fila de vídeos", estado: "aguardando", ultima: null, exemplo: true }],
+    esperando: [
+      { id: "ex1", titulo: "robo-backup falhou", tipo: "falha", exemplo: true },
+      { id: "ex2", titulo: "exemplo — responder o orçamento do cliente", tipo: "pendencia", exemplo: true }],
+    avisos: ["Sem estado.json: rode python3 coletar.py e abra com python3 -m http.server"] };
+}
+async function carregar() {
+  try {
+    const r = await fetch("estado.json?t=" + Date.now(), { cache: "no-store" });
+    if (!r.ok) throw new Error(r.status);
+    estado = await r.json();
+  } catch (e) { if (!estado) estado = exemplo(); }
+  try {
+    const r = await fetch("bom_dia.txt?t=" + Date.now(), { cache: "no-store" });
+    bomDiaTxt = r.ok ? (await r.text()).trim() : null;
+  } catch (e) { bomDiaTxt = null; }
+  desenharPaineis();
+}
+
+/* ---------- tempo ---------- */
+function haQuanto(iso) {
+  if (!iso) return "ainda não rodou";
+  const s = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (s < 0) return "agora";
+  if (s < 90) return "há 1 min";
+  if (s < 3600) return "há " + Math.round(s / 60) + " min";
+  if (s < 86400) return "há " + Math.round(s / 3600) + " h";
+  return "há " + Math.round(s / 86400) + " d";
+}
+const ROT = { ok: "ok", falhou: "falhou", rodando: "rodando", aguardando: "aguardando" };
+function esc(t) { return String(t ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+
+function desenharPaineis() {
+  const e = estado, r = e.resumo || {};
+  $("nomeIA").textContent = (e.assistente || "JARVIS").toUpperCase();
+  const ordem = { falhou: 0, rodando: 1, ok: 2, aguardando: 3 };
+  const sis = [...(e.sistemas || [])].sort((a, b) => (ordem[a.estado] - ordem[b.estado]) || String(b.ultima || "").localeCompare(String(a.ultima || "")));
+  $("subSis").textContent = `${r.sistemas ?? sis.length} sistemas · ${r.ok ?? 0} ok · ${r.falhou ?? 0} com falha · ${r.rodando ?? 0} rodando`
+    + ((e.avisos || []).length ? ` · ⚠ ${e.avisos[0]}` : "");
+  $("listaSis").innerHTML = sis.map(s => `<li><span class="ponto ${esc(s.estado)}" aria-hidden="true"></span>
+    <span class="nome" title="${esc(s.nome)}">${esc(s.nome)}${s.exemplo ? '<span class="exemplo">exemplo</span>' : ""}</span>
+    <span class="rot ${esc(s.estado)}">${ROT[s.estado] || esc(s.estado)} · ${haQuanto(s.ultima)}</span>
+    <span class="acao" title="${esc(s.descricao)}">${esc(s.descricao || "—")}</span></li>`).join("");
+
+  const esp = (e.esperando || []).map(x => ({ ...x, marca: marcas[x.id] }));
+  const abertos = esp.filter(x => !x.marca).length;
+  const nMarc = esp.length - abertos;
+  $("subEsp").textContent = `${abertos} ${abertos === 1 ? "aberto" : "abertos"} · ${nMarc} ${nMarc === 1 ? "marcado" : "marcados"} na tela`;
+  $("listaEsp").innerHTML = esp.map(x => `<li class="${x.marca ? "marcado" : ""}">
+    <span class="titulo ${x.tipo === "falha" ? "falha" : ""}">${x.tipo === "falha" ? "⚠ " : ""}${esc(x.titulo)}${x.exemplo ? '<span class="exemplo">exemplo</span>' : ""}</span>
+    <span class="botoes">${x.marca
+      ? `<span class="marca-tela">${x.marca === "aprovado" ? "Aprovado" : "Depois"} (só na tela)</span><button type="button" data-id="${esc(x.id)}" data-m="">Desfazer</button>`
+      : `<button type="button" data-id="${esc(x.id)}" data-m="aprovado">Aprovar</button><button type="button" data-id="${esc(x.id)}" data-m="depois">Depois</button>`}</span></li>`).join("");
+
+  $("contas").innerHTML = `<span><b>${r.ok ?? 0}</b> ok</span><span class="al"><b>${r.falhou ?? 0}</b> com falha</span><span><b>${abertos}</b> esperando</span>`;
+  const st = (r.falhou ? `${r.falhou} com falha` : "tudo em ordem") + (e.exemploTudo ? " · modo exemplo" : "");
+  if (!falando && !document.body.classList.contains("partindo")) $("status").textContent = st;
+}
+$("listaEsp").addEventListener("click", ev => {
+  const b = ev.target.closest("button[data-id]"); if (!b) return;
+  if (b.dataset.m) marcas[b.dataset.id] = b.dataset.m; else delete marcas[b.dataset.id];
+  try { localStorage.setItem(CHAVE, JSON.stringify(marcas)); } catch (e) {}
+  desenharPaineis();
+});
+
+/* ---------- fala ---------- */
+let vozPt = null;
+function acharVoz() {
+  const vs = (window.speechSynthesis && speechSynthesis.getVoices()) || [];
+  vozPt = vs.find(v => /pt[-_]BR/i.test(v.lang)) || vs.find(v => /^pt/i.test(v.lang)) || null;
+}
+if (window.speechSynthesis) { acharVoz(); speechSynthesis.onvoiceschanged = acharVoz; }
+let digitando = 0;
+function digitar(texto) {
+  const alvo = $("resposta"), id = ++digitando; let i = 0;
+  if (REDUZ) { alvo.textContent = texto; return; }
+  alvo.innerHTML = '<span class="cursor"></span>';
+  (function passo() {
+    if (id !== digitando) return;
+    i = Math.min(texto.length, i + 2);
+    alvo.innerHTML = esc(texto.slice(0, i)) + '<span class="cursor"></span>';
+    if (i < texto.length) setTimeout(passo, 18);
+  })();
+}
+function falar(texto, rotulo) {
+  digitar(texto);
+  ondaAte = performance.now() + Math.min(9000, 9 * texto.length + 600); // a onda acompanha o texto digitado
+  $("status").textContent = rotulo || "falando";
+  if (!vozLigada || !window.speechSynthesis) { falando = true; setTimeout(() => { falando = false; desenharPaineis(); }, Math.min(6000, 60 * texto.length)); return; }
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(texto);
+  u.lang = "pt-BR"; if (vozPt) u.voice = vozPt; u.rate = 1.02;
+  u.onstart = () => { falando = true; };
+  const vigia = setTimeout(() => { falando = false; desenharPaineis(); }, Math.max(4000, 90 * texto.length)); // se o navegador bloquear a fala
+  u.onend = u.onerror = () => { clearTimeout(vigia); falando = false; desenharPaineis(); };
+  falando = true;
+  speechSynthesis.speak(u);
+}
+
+/* ---------- atalhos ---------- */
+function textoBomDia() {
+  if (bomDiaTxt) return bomDiaTxt;
+  const e = estado, r = e.resumo || {}, h = new Date().getHours();
+  const sauda = h < 12 ? "Bom dia" : h < 18 ? "Boa tarde" : "Boa noite";
+  const falhas = (e.esperando || []).filter(x => x.tipo === "falha");
+  const prim = falhas[0] ? "olhar por que " + falhas[0].titulo.replace(/ falhou$/, "") + " falhou"
+    : ((e.esperando || [])[0]?.titulo || "escolher o projeto do dia");
+  return `${sauda}, ${e.nome || "você"}. ${r.sistemas ?? 0} sistemas no painel, ${r.ok ?? 0} ok e ${r.falhou ?? 0} com falha. `
+    + `Esperando você: ${(e.esperando || []).length} itens. A primeira coisa a fazer: ${prim}.`;
+}
+const CMDS = {
+  bomdia: () => falar(textoBomDia(), "bom dia"),
+  status: () => {
+    const r = estado.resumo || {};
+    falar(`Status: ${r.sistemas ?? 0} sistemas. ${r.ok ?? 0} ok, ${r.falhou ?? 0} com falha, ${r.rodando ?? 0} rodando agora e ${r.aguardando ?? 0} aguardando. `
+      + (r.exemplos ? `${r.exemplos} itens são exemplo. ` : "") + `Atualizado ${haQuanto(estado.gerado_em)}.`, "status");
+  },
+  espera: () => {
+    const ab = (estado.esperando || []).filter(x => !marcas[x.id]);
+    if (!ab.length) return falar("Nada esperando você. Tudo marcado.", "livre");
+    const top = ab.slice(0, 3).map((x, i) => `${i + 1}: ${x.titulo}`).join(". ");
+    falar(`${ab.length} coisas esperando você. As primeiras: ${top}.`, "esperando você");
+  },
+  foco: () => {
+    const on = document.body.classList.toggle("foco");
+    $("bFoco").classList.toggle("on", on); $("bFoco").setAttribute("aria-pressed", on);
+    falar(on ? "Modo foco ligado. Escondi os painéis." : "Modo foco desligado.", on ? "modo foco" : "");
+  }
+};
+document.querySelectorAll(".barra button").forEach(b => b.addEventListener("click", () => CMDS[b.dataset.cmd]()));
+addEventListener("keydown", ev => {
+  if (ev.target.closest && ev.target.closest("input,textarea")) return;
+  const k = { "1": "bomdia", "2": "status", "3": "espera", "4": "foco" }[ev.key];
+  if (k && estado) CMDS[k]();
+});
+function pintarVoz() {
+  $("voz").textContent = "Voz: " + (vozLigada ? "ligada" : "desligada");
+  $("voz").classList.toggle("desl", !vozLigada); $("voz").setAttribute("aria-pressed", vozLigada);
+}
+$("voz").addEventListener("click", () => {
+  vozLigada = !vozLigada; pintarVoz();
+  try { localStorage.setItem("jarvis-painel:voz", vozLigada ? "1" : "0"); } catch (e) {}
+  if (!vozLigada && window.speechSynthesis) speechSynthesis.cancel();
+});
+if (!window.speechSynthesis) { vozLigada = false; $("voz").disabled = true; }
+pintarVoz();
+
+/* ---------- relógio ---------- */
+function relogio() {
+  const d = new Date();
+  $("relogio").textContent = d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  $("data").textContent = d.toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long", year: "numeric" });
+}
+relogio(); setInterval(relogio, 1000);
+
+/* ---------- núcleo (canvas, 60 fps) ---------- */
+const cv = $("cv"), cx = cv.getContext("2d");
+function ajustar() {
+  const r = cv.getBoundingClientRect(), dpr = Math.min(2, devicePixelRatio || 1);
+  cv.width = Math.max(200, r.width * dpr); cv.height = Math.max(200, r.height * dpr);
+}
+addEventListener("resize", ajustar); ajustar();
+const ANEIS = [ // raio relativo, velocidade (rad/s), segmentos, espessura, sentido
+  { r: .84, v: .18, seg: 64, w: 2, gap: .35 },
+  { r: .74, v: -.42, seg: 6, w: 6, gap: .5 },
+  { r: .64, v: .9, seg: 24, w: 3, gap: .3 }];
+let t0 = performance.now(), visivel = true;
+document.addEventListener("visibilitychange", () => { visivel = !document.hidden; if (visivel) requestAnimationFrame(quadro); });
+function quadro(agora) {
+  if (!visivel) return;
+  const t = (agora - t0) / 1000, W = cv.width, H = cv.height, R = Math.min(W, H) / 2, c = { x: W / 2, y: H / 2 };
+  cx.clearRect(0, 0, W, H);
+  const pulso = REDUZ ? .7 : .55 + .45 * (0.5 + 0.5 * Math.sin(t * 2.1));
+  // luz central
+  const g = cx.createRadialGradient(c.x, c.y, 0, c.x, c.y, R * .62);
+  g.addColorStop(0, `rgba(160,240,255,${.30 * pulso})`); g.addColorStop(.6, `rgba(60,190,240,${.12 * pulso})`); g.addColorStop(1, "rgba(0,0,0,0)");
+  cx.fillStyle = g; cx.beginPath(); cx.arc(c.x, c.y, R * .62, 0, 7); cx.fill();
+  // anéis
+  ANEIS.forEach((a, i) => {
+    const rot = REDUZ ? i : t * a.v, rr = R * a.r, passo = Math.PI * 2 / a.seg;
+    // um caminho só por anel; brilho = traço largo translúcido + traço fino (mais leve que shadowBlur)
+    cx.beginPath();
+    for (let s = 0; s < a.seg; s++) {
+      const ini = rot + s * passo;
+      cx.moveTo(c.x + Math.cos(ini) * rr, c.y + Math.sin(ini) * rr);
+      cx.arc(c.x, c.y, rr, ini, ini + passo * (1 - a.gap));
+    }
+    cx.lineWidth = a.w * 3.5 * (W / 520); cx.strokeStyle = `rgba(95,227,255,${.10 + .10 * pulso})`; cx.stroke();
+    cx.lineWidth = a.w * (W / 520); cx.strokeStyle = i === 1 ? "rgba(232,247,255,.9)" : `rgba(95,227,255,${.6 + .35 * pulso})`; cx.stroke();
+  });
+  // marcas finas do anel externo
+  cx.strokeStyle = "rgba(95,227,255,.25)"; cx.lineWidth = 1 * (W / 520);
+  cx.beginPath();
+  for (let s = 0; s < 120; s++) {
+    const an = s * Math.PI / 60 - (REDUZ ? 0 : t * .05), r1 = R * .9, r2 = R * (s % 10 ? .92 : .95);
+    cx.moveTo(c.x + Math.cos(an) * r1, c.y + Math.sin(an) * r1); cx.lineTo(c.x + Math.cos(an) * r2, c.y + Math.sin(an) * r2);
+  }
+  cx.stroke();
+  // onda enquanto fala
+  if (falando || agora < ondaAte) {
+    for (let k = 0; k < 2; k++) {
+      cx.beginPath();
+      for (let s = 0; s <= 180; s++) {
+        const an = s / 180 * Math.PI * 2;
+        const amp = R * .035 * (Math.sin(an * 6 + t * 9 + k * 2) * .6 + Math.sin(an * 11 - t * 13) * .4) * (0.6 + 0.4 * Math.sin(t * 7 + k));
+        const rr = R * (.55 + k * .035) + amp;
+        const x = c.x + Math.cos(an) * rr, y = c.y + Math.sin(an) * rr;
+        s ? cx.lineTo(x, y) : cx.moveTo(x, y);
+      }
+      cx.strokeStyle = k ? "rgba(232,247,255,.45)" : "rgba(95,227,255,.85)"; cx.lineWidth = 2 * (W / 520); cx.stroke();
+    }
+  }
+  requestAnimationFrame(quadro);
+}
+requestAnimationFrame(quadro);
+
+/* ---------- partida (~3 s) ---------- */
+async function partida() {
+  await carregar();
+  const nome = (estado && estado.nome) || "você", h = new Date().getHours();
+  const sauda = h < 12 ? "Bom dia" : h < 18 ? "Boa tarde" : "Boa noite";
+  const linhas = ["> Inicializando…", `> Sistemas no ar. (${(estado.resumo || {}).sistemas ?? 0} lidos)`, `> ${sauda}, ${nome}.`];
+  const pre = $("partidaTxt");
+  if (REDUZ) { pre.textContent = linhas.join("\n"); await new Promise(r => setTimeout(r, 800)); }
+  else for (let i = 0; i < linhas.length; i++) {
+    for (let j = 0; j <= linhas[i].length; j++) { pre.textContent = linhas.slice(0, i).join("\n") + (i ? "\n" : "") + linhas[i].slice(0, j); await new Promise(r => setTimeout(r, 22)); }
+    await new Promise(r => setTimeout(r, 380));
+  }
+  $("partida").classList.add("fim"); document.body.classList.remove("partindo");
+  falar(`${sauda}, ${nome}. Sistemas no ar.`, "online");
+  setInterval(carregar, 60000);
+}
+partida();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>jarvis-painel — o painel do seu Jarvis</title>
+<meta name="description" content="Uma tela de ficção científica que mostra seus timers, robôs, filas e pendências num lugar só e fala bom dia em português. Só lê a máquina: nada é executado.">
+<link rel="alternate" hreflang="pt-BR" href="https://inematds.github.io/jarvis-painel/guia/">
+<link rel="alternate" hreflang="en" href="https://inematds.github.io/jarvis-painel/guia/en/">
+<link rel="alternate" hreflang="es" href="https://inematds.github.io/jarvis-painel/guia/es/">
+<meta property="og:image" content="https://inematds.github.io/jarvis-painel/guia/assets/banner.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c0c10; --bg2:#14141b; --card:#16161e; --line:#272730;
+    --txt:#e9e9ee; --mut:#9a9aa6; --amb:#FACC15; --amb2:#f0c070; --sky:#38bdf8; --pro:#cbd5e1;
+    color-scheme:dark;
+  }
+  body.light{
+    --bg:#f6f7f9; --bg2:#eceef2; --card:#ffffff; --line:#e1e3ea;
+    --txt:#1a1a22; --mut:#5b5b68; --amb:#a16207; --amb2:#a16207; --sky:#0369a1; --pro:#b45309;
+    color-scheme:light;
+  }
+  body.light .hero .glow{opacity:.5}
+  body.light pre{background:#0e0e14;color:#d6d6e0}
+  body.light pre .c{color:#8a8a98}
+  body.light pre .k{color:#f0c070}
+  body.light .step .b,body.light .btn:not(.ghost){background:#FACC15;color:#1a1206}
+  body.light nav{background:rgba(246,247,249,.85)}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.65 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:Sora,sans-serif;line-height:1.15;margin:0}
+  a{color:var(--amb);text-decoration:none}
+  code,pre{font-family:"JetBrains Mono",monospace}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 22px}
+  .mut{color:var(--mut)} .amb{color:var(--amb)}
+  .chip{display:inline-block;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--amb);font-weight:600;font-family:Sora}
+  nav{position:sticky;top:0;z-index:30;backdrop-filter:blur(12px);background:rgba(12,12,16,.78);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;gap:22px;height:60px}
+  nav .brand{display:flex;align-items:center;gap:8px;font-family:Sora;font-weight:800;letter-spacing:-.02em;color:var(--amb);white-space:nowrap}
+  nav .brand .emoji{font-size:1.25rem}
+  nav .sep{color:var(--mut);opacity:.45}
+  nav .inema{color:var(--sky);font-weight:600;font-size:.88rem;font-family:Sora}
+  nav .inema:hover{filter:brightness(1.15)}
+  nav .pro{color:var(--pro);font-weight:600;font-size:.88rem;font-family:Sora}
+  nav .pro:hover{filter:brightness(1.15)}
+  nav .clubpro{display:inline-flex;align-items:center;gap:6px}
+  nav .links{margin-left:auto;display:flex;align-items:center;gap:20px;font-size:.92rem}
+  nav .links a.sec{color:var(--mut);white-space:nowrap} nav .links a.sec:hover{color:var(--txt)}
+  .lang{display:inline-flex;gap:2px;font-family:Sora;font-size:.78rem}
+  .lang a{color:var(--mut);padding:.2em .45em;border-radius:6px} .lang a.on{color:var(--amb);background:rgba(250,204,21,.12)}
+  .tgl{background:var(--bg2);border:1px solid var(--line);color:var(--txt);width:38px;height:38px;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:1.05rem}
+  .tgl:hover{border-color:var(--amb)}
+  .btn{display:inline-block;background:var(--amb);color:#1a1206;font-weight:600;padding:.6em 1.05em;border-radius:10px;font-family:Sora}
+  .btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}
+  @media(max-width:1060px){nav .links a.sec{display:none}}
+  @media(max-width:660px){nav .wrap{gap:8px;padding:8px 14px;height:auto;flex-wrap:wrap} nav .links{gap:8px;margin-left:0;width:100%;justify-content:space-between} nav .btn{padding:.45em .7em;font-size:.82rem} .tgl{width:34px;height:34px}}
+  .hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+  .hero .glow{position:absolute;inset:-40% -20% auto auto;width:70%;height:600px;background:radial-gradient(closest-side,rgba(250,204,21,.18),transparent 70%);pointer-events:none}
+  .hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding:74px 22px}
+  .hero h1{font-size:clamp(2.2rem,5vw,3.5rem);font-weight:800;letter-spacing:-.025em}
+  .hero p.lead{font-size:1.18rem;color:var(--mut);margin:1.1em 0 1.6em;max-width:36ch}
+  .hero .cta{display:flex;gap:12px;flex-wrap:wrap}
+  .hero figure{margin:0;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px -30px #000}
+  .hero figure img{width:100%;height:auto;display:block}
+  .resumo{padding:38px 0 34px;border-bottom:1px solid var(--line)}
+  .resumo p{font-size:1.12rem;line-height:1.7;max-width:74ch;margin:.55em 0 0}
+  @media(max-width:780px){.hero .wrap{grid-template-columns:1fr;padding:48px 22px}}
+  section{padding:62px 0;border-bottom:1px solid var(--line)}
+  section h2{font-size:clamp(1.5rem,3.4vw,2.1rem);font-weight:800;letter-spacing:-.02em}
+  section .sub{color:var(--mut);margin:.6em 0 2em;max-width:62ch}
+  .grid{display:grid;gap:16px}
+  .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)} .g2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:820px){.g3,.g4{grid-template-columns:1fr 1fr}}
+  @media(max-width:540px){.g2,.g3,.g4{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .card h3{font-size:1.05rem;margin-bottom:.4em}
+  .card p{color:var(--mut);font-size:.95rem;margin:0}
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+  .flow span{background:var(--bg2);border:1px solid var(--line);border-radius:999px;padding:.45em .9em;font-size:.88rem;font-family:Sora;font-weight:600}
+  .flow .arr{color:var(--amb);border:none;background:none;padding:0 .1em}
+  pre{background:#0a0a0e;border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow:auto;font-size:.86rem;line-height:1.6;color:#d6d6e0;white-space:pre-wrap;overflow-wrap:anywhere}
+  pre .c{color:#7d7d8a} pre .k{color:var(--amb2)} pre .s{color:#9ece6a}
+  .step{display:grid;grid-template-columns:46px minmax(0,1fr);gap:16px;margin-bottom:26px}
+  .step>div,.card{min-width:0}
+  p code,li code,td code{overflow-wrap:anywhere;font-size:.9em;background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:0 .3em}
+  .step .b{width:46px;height:46px;border-radius:12px;background:var(--amb);color:#1a1206;font-family:Sora;font-weight:800;font-size:1.25rem;display:flex;align-items:center;justify-content:center}
+  .step h3{font-size:1.12rem;margin-bottom:.3em}
+  .step p{color:var(--mut);margin:.2em 0 .7em}
+  .ex{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:680px){.ex{grid-template-columns:1fr}}
+  .ex figure,.tela{margin:0;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+  .ex figure img,.tela img{width:100%;height:auto;display:block}
+  .ex figcaption,.tela figcaption{padding:12px 14px;font-size:.92rem;color:var(--mut);background:var(--card)}
+  .tela{margin:0 0 26px}
+  .nums{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 0 26px}
+  @media(max-width:700px){.nums{grid-template-columns:1fr 1fr}}
+  .nums div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .nums b{display:block;font:800 2.1rem/1 Sora,sans-serif;color:var(--txt)}
+  .nums b.al{color:var(--amb)}
+  .nums span{font-size:.92rem;color:var(--mut)}
+  .aviso{border-left:3px solid var(--amb);background:var(--card);padding:14px 16px;border-radius:0 12px 12px 0;color:var(--txt);margin:0 0 22px}
+  table{width:100%;border-collapse:collapse;font-size:.95rem}
+  th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-family:Sora;font-size:.85rem;color:var(--mut);font-weight:600}
+  .tabela{overflow-x:auto}
+  .phase{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .phase:last-child{border:none}
+  .phase .tag{flex:0 0 92px;font-family:Sora;font-weight:800;color:var(--amb)}
+  .phase .d strong{display:block;margin-bottom:.2em}
+  .phase .d span{color:var(--mut);font-size:.95rem}
+  footer{padding:46px 0;text-align:center;color:var(--mut);font-size:.9rem}
+  .pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:.3em .8em;font-size:.78rem;color:var(--mut);margin:4px}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a class="brand" href="#top"><span class="emoji">🛰️</span> jarvis-painel</a>
+  <span class="sep">|</span>
+  <span class="clubpro">
+    <a class="inema" href="https://inema.club" target="_blank" rel="noopener">INEMA.CLUB</a>
+    <span class="sep">-</span>
+    <a class="pro" href="https://inema.pro" target="_blank" rel="noopener">PRO</a>
+  </span>
+  <div class="links">
+    <a class="sec" href="#oque">O que é</a>
+    <a class="sec" href="#fluxo">Como funciona</a>
+    <a class="sec" href="#guia">Guia de uso</a>
+    <a class="sec" href="#prompts">Prompts</a>
+    <span class="lang"><a class="on" href="./">PT</a><a href="en/">EN</a><a href="es/">ES</a></span>
+    <button class="tgl" id="themeToggle" aria-label="Alternar tema" title="Alternar tema">🌙</button>
+    <a class="btn" href="https://github.com/inematds/jarvis-painel" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</div></nav>
+
+<header class="hero" id="top">
+  <div class="glow"></div>
+  <div class="wrap">
+    <div>
+      <span class="chip">Painel HUD · só leitura · fala português</span>
+      <h1>Seus robôs trabalham. Uma tela mostra <span class="amb">tudo</span>.</h1>
+      <p class="lead">E fala bom dia: o que rodou desde ontem, o que falhou, o que espera você e a primeira coisa a fazer.</p>
+      <div class="cta">
+        <a class="btn" href="#guia">Começar o guia</a>
+        <a class="btn ghost" href="https://inematds.github.io/jarvis-painel/" target="_blank" rel="noopener">Ver a demonstração</a>
+      </div>
+    </div>
+    <figure><img src="assets/banner.jpg" alt="Banner: seus robôs na tela, um painel que mostra tudo e fala bom dia"></figure>
+  </div>
+</header>
+
+<section id="resumo" class="resumo"><div class="wrap">
+  <span class="chip">Em resumo</span>
+  <p>O jarvis-painel é uma tela no estilo ficção científica que junta, num lugar só, tudo o que roda sozinho no seu computador: os timers do Linux, filas e arquivos de log. Serve para quem tem robôs, rotinas e filas trabalhando e não sabe o que cada um fez nem o que está esperando por você. Ele mostra quem terminou bem, quem falhou e a sua lista de pendências, e lê um resumo em voz alta em português. Precisa só de Python 3 e de um navegador; tudo roda na sua máquina, sem chave e sem serviço pago, e ele só lê: nada é executado pelos botões.</p>
+</div></section>
+
+<section id="oque"><div class="wrap">
+  <span class="chip">O que é</span>
+  <h2>Uma tela para os robôs que você não vê</h2>
+  <p class="sub">Quem automatiza acaba com dezenas de rotinas rodando escondidas. O painel lê tudo e mostra em três partes: Sistemas, o núcleo que fala e "Esperando você".</p>
+  <figure style="margin:0 0 26px;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px -30px #000"><img src="assets/banner-grade.jpg" alt="Banner com os seis recursos: Sistemas, Esperando você, Bom dia em voz, Modo foco, Só leitura e Celular" loading="lazy" style="width:100%;display:block"></figure>
+
+  <p class="sub" style="margin-bottom:12px">Lido de verdade numa máquina do INEMA em 08/11/2026, às 07:49:</p>
+  <div class="nums">
+    <div><b>62</b><span>sistemas lidos (53 timers, 6 serviços sem timer, 3 filas e logs)</span></div>
+    <div><b>38</b><span>terminaram bem</span></div>
+    <div><b class="al">11</b><span>com falha (a mesma conta no núcleo e na lista)</span></div>
+    <div><b>42</b><span>esperando você (11 falhas, 30 pendências, 1 fila)</span></div>
+  </div>
+  <figure class="tela"><img src="assets/painel-desktop.jpg" alt="O painel no computador: Sistemas à esquerda, núcleo JARVIS com anéis e onda no meio, Esperando você à direita, barra de atalhos embaixo" loading="lazy"><figcaption>O painel falando o bom dia: a onda em volta do núcleo acompanha a fala e o texto aparece digitado embaixo. As pendências foram trocadas por "Pendência N" no modo <code>--anonimo</code> para este print.</figcaption></figure>
+
+  <div class="grid g3">
+    <div class="card"><h3>🛰️ Tudo num lugar</h3><p>Timers do Linux com o último resultado de cada um, serviços que falharam, filas JSON, logs e o seu arquivo de pendências em markdown.</p></div>
+    <div class="card"><h3>🔊 Fala com você</h3><p>Bom dia, Status, O que espera e Modo foco. Voz em português do próprio navegador, sem serviço pago.</p></div>
+    <div class="card"><h3>🔒 Só lê</h3><p>Aprovar e Depois só marcam na tela. Nada é iniciado, parado, apagado ou enviado. O que não deu para ler aparece como "exemplo".</p></div>
+  </div>
+</div></section>
+
+<section id="fluxo"><div class="wrap">
+  <span class="chip">Como funciona</span>
+  <h2>Dois scripts e uma página</h2>
+  <p class="sub">O <code>coletar.py</code> lê a máquina e grava o <code>estado.json</code>. O <code>bom_dia.py</code> escreve o resumo. A página lê os dois e desenha a tela.</p>
+  <div class="flow">
+    <span>config.json</span><span class="arr">→</span>
+    <span>coletar.py</span><span class="arr">→</span>
+    <span>estado.json</span><span class="arr">→</span>
+    <span>bom_dia.py</span><span class="arr">→</span>
+    <span>index.html</span><span class="arr">→</span>
+    <span>você</span>
+  </div>
+  <div class="grid g3" style="margin-top:26px">
+    <div class="card"><h3>Núcleo central</h3><p>Três anéis girando em velocidades diferentes, luz pulsando, o nome JARVIS e uma linha de status. Partida de cerca de 3 segundos: "Inicializando… Sistemas no ar. Bom dia, Nei."</p></div>
+    <div class="card"><h3>Sistemas (esquerda)</h3><p>Cada timer, serviço e fila com um ponto e a palavra do estado: ok, falhou, rodando ou aguardando. Embaixo, há quanto tempo rodou e o que faz.</p></div>
+    <div class="card"><h3>Esperando você (direita)</h3><p>Primeiro o que falhou, depois as pendências do seu arquivo e os itens parados em filas. Botões Aprovar e Depois, que só marcam na tela.</p></div>
+    <div class="card"><h3>Topo</h3><p>Relógio, data e o selo "Voz: ligada". Clique no selo para desligar a voz.</p></div>
+    <div class="card"><h3>Barra de comando</h3><p>Bom dia · Status · O que espera · Modo foco, também nas teclas 1, 2, 3 e 4. O foco escurece os painéis e deixa só o núcleo.</p></div>
+    <div class="card"><h3>Cores</h3><p>Ciano e branco gelo no azul-marinho; âmbar só para alerta. Anéis a 60 quadros por segundo e sem rolagem lateral no celular.</p></div>
+  </div>
+</div></section>
+
+<section id="pre"><div class="wrap">
+  <span class="chip">Pré-requisitos</span>
+  <h2>O que precisa ter antes</h2>
+  <p class="sub">Nada para instalar além do Python. O Ollama é opcional.</p>
+  <div class="grid g3">
+    <div class="card"><h3>Python 3.9 ou mais novo</h3><p>Vem no Ubuntu e no Mac. Confira a versão:</p><pre>python3 --version</pre></div>
+    <div class="card"><h3>Linux com systemd (para dados reais)</h3><p>Os timers vêm do <code>systemctl --user</code>. Sem ele (no Mac, por exemplo), os sistemas aparecem como "exemplo"; pendências e filas continuam reais.</p><pre>systemctl --user list-timers</pre></div>
+    <div class="card"><h3>Navegador e, se quiser, Ollama</h3><p>Chrome, Edge ou Firefox. A voz pt-BR depende das vozes do seu sistema. O Ollama só serve para o resumo mais natural.</p><pre>ollama list</pre></div>
+  </div>
+</div></section>
+
+<section id="guia"><div class="wrap">
+  <span class="chip">Guia de uso · passo a passo</span>
+  <h2>Do zero ao "Bom dia" em 5 minutos</h2>
+  <p class="sub">Cada comando abaixo foi rodado numa máquina real. Cole no terminal, um bloco por vez.</p>
+
+  <div class="step"><div class="b">1</div><div>
+    <h3>Baixe o kit</h3>
+    <p>Cria a pasta <code>jarvis-painel</code> com os scripts, a página, os prompts e os testes.</p>
+<pre>git clone https://github.com/inematds/jarvis-painel.git
+cd jarvis-painel</pre>
+  </div></div>
+
+  <div class="step"><div class="b">2</div><div>
+    <h3>Diga quem é você e onde estão as suas pendências</h3>
+    <p>O <code>config.json</code> vem configurado para o INEMA (abaixo, um trecho). Abra num editor e troque o nome, o arquivo de pendências e as filas pelos seus. Se não tiver filas, deixe a lista vazia: <code>"fontes_extras": []</code>.</p>
+<pre>{
+  "nome": "Nei",
+  "pendencias": { "arquivo": "~/projetos/wifi/pendencias.md", "parar_em": "Resolvidas" },
+  "fontes_extras": [
+    { "nome": "fila-espanhol", "tipo": "fila_json", "caminho": "~/projetos/wifi/fila-espanhol/fila.json" },
+    { "nome": "log-fila-espanhol", "tipo": "log", "caminho": "~/projetos/wifi/fila-espanhol/fila.log" }
+  ],
+  "ignorar": ["snap.*", "run-u*", "*.scope"]
+}</pre>
+    <p>No arquivo de pendências, cada linha que começa com <code>- **título**</code> ou <code>### título</code> vira um item, até a seção <code>## Resolvidas</code>.</p>
+  </div></div>
+
+  <div class="step"><div class="b">3</div><div>
+    <h3>Leia a máquina</h3>
+    <p>Só leitura: timers, último resultado de cada serviço, falhas, pendências e filas. A linha final resume o que achou.</p>
+<pre>python3 coletar.py</pre>
+    <p>Na máquina do INEMA saiu: <code>estado.json: 62 sistemas (53 timers) · 38 ok · 11 falharam · 42 esperando você · 0 exemplos</code>.</p>
+  </div></div>
+
+  <div class="step"><div class="b">4</div><div>
+    <h3>Escreva o resumo da manhã</h3>
+    <p>Por regra fixa, sem IA: o que os robôs fizeram desde ontem, o que espera você e a primeira coisa a fazer. Grava em <code>bom_dia.txt</code>.</p>
+<pre>python3 bom_dia.py</pre>
+    <p>Com Ollama rodando, o modelo local deixa o texto mais natural sem mudar os números (o modelo fica no <code>config.json</code>; se o Ollama não responder, fica o texto da regra). Na máquina do INEMA levou 17,5 segundos com o qwen3.8:27b.</p>
+<pre>python3 bom_dia.py --ollama</pre>
+  </div></div>
+
+  <div class="step"><div class="b">5</div><div>
+    <h3>Abra a tela</h3>
+    <p>A página precisa de um servidor local para ler o <code>estado.json</code>. Depois abra <code>http://localhost:8000</code> no navegador. Ela relê o estado a cada 60 segundos.</p>
+<pre>python3 -m http.server 8000</pre>
+  </div></div>
+
+  <div class="step"><div class="b">6</div><div>
+    <h3>Use os atalhos</h3>
+    <p>Clique ou aperte as teclas 1 a 4: <strong>Bom dia</strong>, <strong>Status</strong>, <strong>O que espera</strong> e <strong>Modo foco</strong>. Em "Esperando você", <strong>Aprovar</strong> e <strong>Depois</strong> só marcam na tela e ficam guardados neste navegador; <strong>Desfazer</strong> tira a marca. Nada é executado.</p>
+  </div></div>
+
+  <div class="step"><div class="b">7</div><div>
+    <h3>Atualizar sozinho (opcional)</h3>
+    <p>Abra o agendador com <code>crontab -e</code> e cole a linha abaixo, trocando o caminho pela pasta onde você baixou. A cada 5 minutos ele relê a máquina e reescreve o resumo.</p>
+<pre>*/5 * * * * cd $HOME/jarvis-painel &amp;&amp; python3 coletar.py &amp;&amp; python3 bom_dia.py</pre>
+  </div></div>
+
+  <div class="step"><div class="b">8</div><div>
+    <h3>Tirar print sem mostrar as suas pendências</h3>
+    <p>O modo anônimo troca cada título por "Pendência N (data)". Os nomes dos timers continuam.</p>
+<pre>python3 coletar.py --anonimo</pre>
+  </div></div>
+
+  <div class="step"><div class="b">9</div><div>
+    <h3>Confira que está tudo certo</h3>
+    <p>Os testes rodam sem internet e conferem a coleta com saídas falsas do <code>systemctl</code>, o item ilegível que vira "exemplo" e o resumo sem Ollama. Precisa do pytest; sem ele, use <code>python3 -m unittest discover tests</code>.</p>
+<pre>python3 -m pytest -q</pre>
+  </div></div>
+</div></section>
+
+<section id="exemplos"><div class="wrap">
+  <span class="chip">Na tela</span>
+  <h2>A partida, o celular, o Aprovar e o foco</h2>
+  <p class="sub">Prints da mesma máquina, com as pendências no modo anônimo.</p>
+  <div class="ex">
+    <figure><img src="assets/painel-partida.jpg" alt="Partida: o núcleo aparece com os anéis e o texto Inicializando, Sistemas no ar (62 lidos)" loading="lazy"><figcaption>Partida de cerca de 3 segundos: "Inicializando… Sistemas no ar." e então "Bom dia, Nei."</figcaption></figure>
+    <figure><img src="assets/painel-aprovado.jpg" alt="Painel Esperando você com um item marcado como Aprovado (só na tela) e o botão Desfazer" loading="lazy"><figcaption>Aprovar só marca na tela: o item fica apagado com "Aprovado (só na tela)" e o botão Desfazer.</figcaption></figure>
+    <figure><img src="assets/painel-foco.jpg" alt="Modo foco: os painéis laterais escurecidos e só o núcleo aceso" loading="lazy"><figcaption>Modo foco: os painéis escurecem e o núcleo fica sozinho.</figcaption></figure>
+    <figure><img src="assets/painel-celular.jpg" alt="O painel no celular: núcleo no topo, contadores, listas e a barra de atalhos fixa embaixo" loading="lazy"><figcaption>No celular (390 px): sem rolagem lateral, com a barra de atalhos fixa embaixo.</figcaption></figure>
+  </div>
+</div></section>
+
+<section id="prompts"><div class="wrap">
+  <span class="chip">Prompts prontos</span>
+  <h2>Três pedidos para colar</h2>
+  <p class="sub">Ficam na pasta <code>prompts/</code> (e em inglês e espanhol em <code>prompts/en/</code> e <code>prompts/es/</code>).</p>
+  <div class="grid g3">
+    <div class="card"><h3>Personalidade do Jarvis</h3><p>Cole no começo da conversa com um modelo: português, frases curtas, usa só os números do painel, diz "não sei" quando falta dado e nunca executa nada sozinho. Arquivo <code>prompts/jarvis-personalidade.md</code>.</p></div>
+    <div class="card"><h3>Pesquisa de clientes, só lendo</h3><p>Para o Claude Code com navegador. Troque o ramo e a cidade. Arquivo <code>prompts/pesquisa-clientes.md</code>.</p>
+<pre class="prompt">Procure &lt;ramo&gt; em &lt;cidade&gt;. Abra os 3 primeiros sites que aparecerem.
+Monte uma tabela com: nome, site, telefone e uma coisa que o site faz mal.
+Regras: só leia. Não contate ninguém, não preencha formulário.</pre></div>
+    <div class="card"><h3>Conserta a tela</h3><p>Se o painel abrir em branco ou com erro, abra o Claude Code ou o Codex na pasta, cole o pedido e o erro do console (tecla F12). Arquivo <code>prompts/conserta-tela.md</code>.</p></div>
+  </div>
+  <div class="aviso" style="margin-top:26px">Quer conversar por voz com um modelo que roda na sua GPU? O painel funciona sozinho, e o kit irmão <a href="https://inematds.github.io/jarvis-local/guia/" target="_blank" rel="noopener"><strong>jarvis-local</strong></a> adiciona o ouvido e a voz. Use o <code>prompts/jarvis-personalidade.md</code> como instrução dele.</div>
+</div></section>
+
+<section id="roadmap"><div class="wrap">
+  <span class="chip">Limites e próximos passos</span>
+  <h2>O que ele faz hoje e o que não faz</h2>
+  <p class="sub">Para você saber o que esperar antes de colocar no dia a dia.</p>
+  <div class="phase"><div class="tag">Hoje</div><div class="d"><strong>Versão 1.0</strong><span>Lê timers e serviços do systemd do usuário, pendências em markdown, filas JSON e logs. Fala pela voz do navegador. Resumo por regra e, opcionalmente, pelo Ollama.</span></div></div>
+  <div class="phase"><div class="tag">Não faz</div><div class="d"><strong>Nenhuma ação na máquina</strong><span>Não liga, não para e não reinicia serviços; Aprovar e Depois não chegam a lugar nenhum além do navegador. Timers do sistema (root) e do cron não aparecem.</span></div></div>
+  <div class="phase"><div class="tag">Voz</div><div class="d"><strong>Depende do navegador</strong><span>Alguns navegadores só falam depois do primeiro clique na página. Se não houver voz pt-BR instalada, o texto aparece digitado do mesmo jeito.</span></div></div>
+  <div class="phase"><div class="tag">Ideia</div><div class="d"><strong>Mais fontes</strong><span>Ler o cron e os timers do sistema, e contêineres Docker. Ainda não existe.</span></div></div>
+</div></section>
+
+<footer>
+  <div class="wrap">
+    <div class="pill">Python 3 (só biblioteca padrão)</div><div class="pill">HTML + canvas</div><div class="pill">speechSynthesis pt-BR</div><div class="pill">Ollama (opcional)</div>
+    <p style="margin-top:18px">jarvis-painel · licença MIT · conteúdo aberto e gratuito ·
+      <a href="https://github.com/inematds/jarvis-painel">github.com/inematds/jarvis-painel</a> ·
+      <a href="https://inema.club">INEMA.CLUB</a></p>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var KEY='jarvis-painel-theme';
+    var b=document.body, t=document.getElementById('themeToggle');
+    try{ if(localStorage.getItem(KEY)==='light'){ b.classList.add('light'); t.textContent='☀️'; } }catch(e){}
+    t.addEventListener('click',function(){
+      var light=b.classList.toggle('light');
+      t.textContent=light?'☀️':'🌙';
+      try{ localStorage.setItem(KEY, light?'light':'dark'); }catch(e){}
+    });
+  })();
+</script>
+</body>
+</html>

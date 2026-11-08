@@ -1,0 +1,20 @@
+{
+  "_leia": "Vem configurado para o INEMA. Troque nome, o arquivo de pendências e as fontes extras pelos seus. Tudo aqui só é LIDO.",
+  "nome": "Nei",
+  "assistente": "JARVIS",
+  "pendencias": {
+    "arquivo": "~/projetos/wifi/pendencias.md",
+    "parar_em": "Resolvidas",
+    "limite": 30
+  },
+  "fontes_extras": [
+    {"nome": "fila-espanhol", "tipo": "fila_json", "caminho": "~/projetos/wifi/fila-espanhol/fila.json", "campo": "estado", "esperando": ["pendente"]},
+    {"nome": "fila-cidades", "tipo": "fila_json", "caminho": "~/projetos/wifi/fila-cidades/fila.json", "campo": "estado", "esperando": ["pendente"]},
+    {"nome": "log-fila-espanhol", "tipo": "log", "caminho": "~/projetos/wifi/fila-espanhol/fila.log"}
+  ],
+  "ignorar": ["snap.*", "run-u*", "*.scope"],
+  "ollama": {
+    "url": "http://localhost:11434",
+    "modelo": "qwen3.8:27b"
+  }
+}
