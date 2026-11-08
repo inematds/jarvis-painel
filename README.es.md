@@ -96,7 +96,7 @@ Para tomar una captura sin exponer tus pendientes: `python3 coletar.py --anonimo
 ## Prompts (`prompts/es/`)
 
 - `jarvis-personalidade.md` — la personalidad de Jarvis (tranquilo, en portugués, no inventa números ni ejecuta nada).
-- `pesquisa-clientes.md` — para Claude Code con navegador: «busca <ramo> en <cidade>, abre los 3 primeros sitios,
+- `pesquisa-clientes.md` — para Claude Code con navegador: «busca <rubro> en <ciudad>, abre los 3 primeros sitios,
   crea una tabla con nombre, sitio, teléfono y algo que el sitio hace mal; solo lee, no contactes a nadie ni rellenes formularios».
 - `conserta-tela.md` — pega el error y pide que lo arregle.
 

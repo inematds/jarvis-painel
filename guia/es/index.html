@@ -248,6 +248,7 @@ cd jarvis-painel</pre>
   "ignorar": ["snap.*", "run-u*", "*.scope"]
 }</pre>
     <p>En el archivo de pendientes, cada línea que empieza con <code>- **título**</code> o <code>### título</code> se convierte en un elemento, hasta la sección <code>## Resolvidas</code>.</p>
+    <p>Markdown es un archivo de texto simple (<code>.md</code>) en el que <code>**palabra**</code> indica negrita; crea el tuyo con <code>nano ~/pendencias.md</code> y escribe una tarea pendiente por línea, así: <code>- **Pagar la factura**</code>. Una cola JSON es una lista de tareas que un robot guarda en un archivo; un registro es el archivo donde anota lo que hizo.</p>
   </div></div>
 
   <div class="step"><div class="b">3</div><div>
@@ -271,6 +272,7 @@ cd jarvis-painel</pre>
     <h3>Abre la pantalla</h3>
     <p>La página necesita un servidor local para leer <code>estado.json</code>. Después, abre <code>http://localhost:8000</code> en el navegador. Vuelve a leer el estado cada 60 segundos. Deja esta terminal abierta: si la cierras, la página deja de actualizarse (para apagar el servidor, Ctrl+C).</p>
 <pre>python3 -m http.server 8000</pre>
+    <p>Para los siguientes pasos, abre <strong>otra terminal</strong> y ve a la carpeta con <code>cd ~/jarvis-painel</code>.</p>
   </div></div>
 
   <div class="step"><div class="b">6</div><div>
@@ -317,7 +319,7 @@ cd jarvis-painel</pre>
   <div class="grid g3">
     <div class="card"><h3>Personalidad de Jarvis</h3><p>Pégalo al inicio de la conversación con un modelo: español, frases cortas, usa solo los números del panel, dice «no sé» cuando falta información y nunca ejecuta nada por su cuenta. Archivo <code>prompts/es/jarvis-personalidade.md</code>.</p></div>
     <div class="card"><h3>Investigación de clientes, solo lectura</h3><p>Para Claude Code con navegador. Cambia el sector y la ciudad. Archivo <code>prompts/es/pesquisa-clientes.md</code>.</p>
-<pre class="prompt">Busca &lt;ramo&gt; en &lt;cidade&gt;. Abre los 3 primeros sitios que aparezcan.
+<pre class="prompt">Busca &lt;rubro&gt; en &lt;ciudad&gt;. Abre los 3 primeros sitios que aparezcan.
 Arma una tabla con: nombre, sitio, teléfono y una cosa que el sitio hace mal.
 Reglas: solo lee. No contactes a nadie ni llenes formularios.</pre></div>
     <div class="card"><h3>Repara la pantalla</h3><p>Si el panel se abre en blanco o con un error, abre Claude Code o Codex en la carpeta, pega el pedido y el error de la consola (tecla F12). Archivo <code>prompts/es/conserta-tela.md</code>.</p></div>

@@ -248,6 +248,7 @@ cd jarvis-painel</pre>
   "ignorar": ["snap.*", "run-u*", "*.scope"]
 }</pre>
     <p>In the pending tasks file, each line that starts with <code>- **title**</code> or <code>### title</code> becomes an item, up to the <code>## Resolvidas</code> section.</p>
+    <p>Markdown is a plain text file (<code>.md</code>) where <code>**word**</code> marks bold text; create yours with <code>nano ~/pendencias.md</code> and write one pending task per line, like this: <code>- **Pay the bill**</code>. A JSON queue is a list of tasks that a robot writes to a file; a log is the file where it records what it did.</p>
   </div></div>
 
   <div class="step"><div class="b">3</div><div>
@@ -271,6 +272,7 @@ cd jarvis-painel</pre>
     <h3>Open the page</h3>
     <p>The page needs a local server to read <code>estado.json</code>. Then open <code>http://localhost:8000</code> in your browser. It rereads the state every 60 seconds. Leave this terminal open: if you close it, the page stops updating (to shut it down, press Ctrl+C).</p>
 <pre>python3 -m http.server 8000</pre>
+    <p>For the next steps, open <strong>another terminal</strong> and go to the folder with <code>cd ~/jarvis-painel</code>.</p>
   </div></div>
 
   <div class="step"><div class="b">6</div><div>

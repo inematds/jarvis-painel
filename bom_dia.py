@@ -81,7 +81,8 @@ def resumo_por_regra(estado: dict, agora: datetime | None = None) -> str:
         primeiro = "escolher o projeto do dia"
     linhas.append(f"A primeira coisa a fazer: {primeiro}.")
     if estado.get("resumo", {}).get("exemplos"):
-        linhas.append(f"Atenção: {estado['resumo']['exemplos']} itens são exemplos, porque não deu para ler a fonte.")
+        x = estado['resumo']['exemplos']
+        linhas.append(f"Atenção: {n(x, 'item é exemplo', 'itens são exemplos')}, porque não deu para ler a fonte.")
     return " ".join(linhas)
 
 

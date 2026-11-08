@@ -280,7 +280,7 @@ const CMDS = {
   status: () => {
     const r = estado.resumo || {};
     falar(`Status: ${r.sistemas ?? 0} sistemas. ${r.ok ?? 0} ok, ${r.falhou ?? 0} com falha, ${r.rodando ?? 0} rodando agora e ${r.aguardando ?? 0} aguardando. `
-      + (r.exemplos ? `${r.exemplos} itens são exemplo. ` : "") + `Atualizado ${haQuanto(estado.gerado_em)}.`, "status");
+      + (r.exemplos ? (r.exemplos === 1 ? "1 item é exemplo. " : `${r.exemplos} itens são exemplo. `) : "") + `Atualizado ${haQuanto(estado.gerado_em)}.`, "status");
   },
   espera: () => {
     const ab = (estado.esperando || []).filter(x => !marcas[x.id]);

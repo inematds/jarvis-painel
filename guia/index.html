@@ -248,6 +248,7 @@ cd jarvis-painel</pre>
   "ignorar": ["snap.*", "run-u*", "*.scope"]
 }</pre>
     <p>No arquivo de pendências, cada linha que começa com <code>- **título**</code> ou <code>### título</code> vira um item, até a seção <code>## Resolvidas</code>.</p>
+    <p>Markdown é um arquivo de texto simples (<code>.md</code>) em que <code>**palavra**</code> marca negrito; crie o seu com <code>nano ~/pendencias.md</code> e escreva uma pendência por linha, assim: <code>- **Pagar o boleto**</code>. Uma fila JSON é a lista de tarefas que um robô grava em arquivo; um log é o arquivo onde ele anota o que fez.</p>
   </div></div>
 
   <div class="step"><div class="b">3</div><div>
@@ -271,6 +272,7 @@ cd jarvis-painel</pre>
     <h3>Abra a tela</h3>
     <p>A página precisa de um servidor local para ler o <code>estado.json</code>. Depois abra <code>http://localhost:8000</code> no navegador. Ela relê o estado a cada 60 segundos. Deixe este terminal aberto: se fechar, a página para de atualizar (para desligar, Ctrl+C).</p>
 <pre>python3 -m http.server 8000</pre>
+    <p>Para os próximos passos, abra <strong>outro terminal</strong> e entre na pasta com <code>cd ~/jarvis-painel</code>.</p>
   </div></div>
 
   <div class="step"><div class="b">6</div><div>
