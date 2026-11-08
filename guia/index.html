@@ -155,7 +155,7 @@
 
 <section id="resumo" class="resumo"><div class="wrap">
   <span class="chip">Em resumo</span>
-  <p>O jarvis-painel é uma tela no estilo ficção científica que junta, num lugar só, tudo o que roda sozinho no seu computador: os timers do Linux, filas e arquivos de log. Serve para quem tem robôs, rotinas e filas trabalhando e não sabe o que cada um fez nem o que está esperando por você. Ele mostra quem terminou bem, quem falhou e a sua lista de pendências, e lê um resumo em voz alta em português. Precisa só de Python 3 e de um navegador; tudo roda na sua máquina, sem chave e sem serviço pago, e ele só lê: nada é executado pelos botões.</p>
+  <p>O jarvis-painel é uma tela no estilo ficção científica (o "HUD", aquele painel de informações dos filmes) que junta, num lugar só, tudo o que roda sozinho no seu computador: os timers do Linux, filas e arquivos de log. Serve para quem tem robôs, rotinas e filas trabalhando e não sabe o que cada um fez nem o que está esperando por você. Ele mostra quem terminou bem, quem falhou e a sua lista de pendências, e lê um resumo em voz alta em português. Precisa só de Python 3 e de um navegador; tudo roda na sua máquina, sem chave e sem serviço pago, e ele só lê: nada é executado pelos botões.</p>
 </div></section>
 
 <section id="oque"><div class="wrap">
@@ -164,10 +164,10 @@
   <p class="sub">Quem automatiza acaba com dezenas de rotinas rodando escondidas. O painel lê tudo e mostra em três partes: Sistemas, o núcleo que fala e "Esperando você".</p>
   <figure style="margin:0 0 26px;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px -30px #000"><img src="assets/banner-grade.jpg" alt="Banner com os seis recursos: Sistemas, Esperando você, Bom dia em voz, Modo foco, Só leitura e Celular" loading="lazy" style="width:100%;display:block"></figure>
 
-  <p class="sub" style="margin-bottom:12px">Lido de verdade numa máquina do INEMA em 08/11/2026, às 07:49:</p>
+  <p class="sub" style="margin-bottom:12px">Lido de verdade numa máquina do INEMA em 08/11/2026, às 08:18 (na sua máquina os números serão outros, e mudam a cada hora):</p>
   <div class="nums">
     <div><b>62</b><span>sistemas lidos (53 timers, 6 serviços sem timer, 3 filas e logs)</span></div>
-    <div><b>38</b><span>terminaram bem</span></div>
+    <div><b>40</b><span>terminaram bem</span></div>
     <div><b class="al">11</b><span>com falha (a mesma conta no núcleo e na lista)</span></div>
     <div><b>42</b><span>esperando você (11 falhas, 30 pendências, 1 fila)</span></div>
   </div>
@@ -207,9 +207,10 @@
   <h2>O que precisa ter antes</h2>
   <p class="sub">Nada para instalar além do Python. O Ollama é opcional.</p>
   <div class="grid g3">
-    <div class="card"><h3>Python 3.9 ou mais novo</h3><p>Vem no Ubuntu e no Mac. Confira a versão:</p><pre>python3 --version</pre></div>
-    <div class="card"><h3>Linux com systemd (para dados reais)</h3><p>Os timers vêm do <code>systemctl --user</code>. Sem ele (no Mac, por exemplo), os sistemas aparecem como "exemplo"; pendências e filas continuam reais.</p><pre>systemctl --user list-timers</pre></div>
-    <div class="card"><h3>Navegador e, se quiser, Ollama</h3><p>Chrome, Edge ou Firefox. A voz pt-BR depende das vozes do seu sistema. O Ollama só serve para o resumo mais natural.</p><pre>ollama list</pre></div>
+    <div class="card"><h3>Python 3.9 ou mais novo e o git</h3><p>O Python vem no Ubuntu e no Mac. O git (que baixa o kit) nem sempre: no Ubuntu, instale com <code>sudo apt install git</code>. Confira os dois:</p><pre>python3 --version
+git --version</pre></div>
+    <div class="card"><h3>Linux com systemd (para dados reais)</h3><p>Timer é uma rotina que roda sozinha em hora marcada (o "agendador" do Linux, chamado systemd). Os timers vêm do <code>systemctl --user</code>. Sem ele (no Mac, por exemplo), os sistemas aparecem como "exemplo"; pendências e filas continuam reais.</p><pre>systemctl --user list-timers</pre></div>
+    <div class="card"><h3>Navegador e, se quiser, Ollama</h3><p>Chrome, Edge ou Firefox. A voz pt-BR depende das vozes do seu sistema. O Ollama é um programa gratuito que roda um modelo de IA no seu próprio computador (instalação em ollama.com); aqui ele só deixa o resumo mais natural. Se tiver, este comando lista os modelos:</p><pre>ollama list</pre></div>
   </div>
 </div></section>
 
@@ -227,7 +228,16 @@ cd jarvis-painel</pre>
 
   <div class="step"><div class="b">2</div><div>
     <h3>Diga quem é você e onde estão as suas pendências</h3>
-    <p>O <code>config.json</code> vem configurado para o INEMA (abaixo, um trecho). Abra num editor e troque o nome, o arquivo de pendências e as filas pelos seus. Se não tiver filas, deixe a lista vazia: <code>"fontes_extras": []</code>.</p>
+    <p>O <code>config.json</code> vem configurado para o INEMA. Abra no editor do terminal (salve com Ctrl+O, Enter, e saia com Ctrl+X):</p>
+<pre>nano config.json</pre>
+    <p>O mais simples é apagar tudo e colar este, trocando o nome e o caminho do seu arquivo de pendências (se não tiver, deixe como está: o painel mostra um "exemplo" no lugar):</p>
+<pre>{
+  "nome": "Marta",
+  "pendencias": { "arquivo": "~/pendencias.md", "parar_em": "Resolvidas" },
+  "fontes_extras": [],
+  "ignorar": ["snap.*", "run-u*", "*.scope"]
+}</pre>
+    <p>A versão do INEMA, que vem no kit, também lê duas filas e um log:</p>
 <pre>{
   "nome": "Nei",
   "pendencias": { "arquivo": "~/projetos/wifi/pendencias.md", "parar_em": "Resolvidas" },
@@ -244,7 +254,9 @@ cd jarvis-painel</pre>
     <h3>Leia a máquina</h3>
     <p>Só leitura: timers, último resultado de cada serviço, falhas, pendências e filas. A linha final resume o que achou.</p>
 <pre>python3 coletar.py</pre>
-    <p>Na máquina do INEMA saiu: <code>estado.json: 62 sistemas (53 timers) · 38 ok · 11 falharam · 42 esperando você · 0 exemplos</code>.</p>
+    <p>Na máquina do INEMA, o terminal mostrou (o script escreve em português):</p>
+<pre>estado.json: 62 sistemas (53 timers) · 40 ok · 11 falharam · 42 esperando você · 0 exemplos</pre>
+    <p>Se o <code>config.json</code> tiver um erro de digitação, o script diz a linha e a coluna do erro.</p>
   </div></div>
 
   <div class="step"><div class="b">4</div><div>
@@ -257,7 +269,7 @@ cd jarvis-painel</pre>
 
   <div class="step"><div class="b">5</div><div>
     <h3>Abra a tela</h3>
-    <p>A página precisa de um servidor local para ler o <code>estado.json</code>. Depois abra <code>http://localhost:8000</code> no navegador. Ela relê o estado a cada 60 segundos.</p>
+    <p>A página precisa de um servidor local para ler o <code>estado.json</code>. Depois abra <code>http://localhost:8000</code> no navegador. Ela relê o estado a cada 60 segundos. Deixe este terminal aberto: se fechar, a página para de atualizar (para desligar, Ctrl+C).</p>
 <pre>python3 -m http.server 8000</pre>
   </div></div>
 
@@ -268,7 +280,7 @@ cd jarvis-painel</pre>
 
   <div class="step"><div class="b">7</div><div>
     <h3>Atualizar sozinho (opcional)</h3>
-    <p>Abra o agendador com <code>crontab -e</code> e cole a linha abaixo, trocando o caminho pela pasta onde você baixou. A cada 5 minutos ele relê a máquina e reescreve o resumo.</p>
+    <p>Abra o agendador com <code>crontab -e</code> e cole a linha abaixo no fim do arquivo. Ela vale se você baixou o kit na sua pasta pessoal (troque o caminho se baixou em outro lugar). A cada 5 minutos ele relê a máquina e reescreve o resumo; o <code>coletar.py</code> acha os seus timers mesmo rodando pelo cron.</p>
 <pre>*/5 * * * * cd $HOME/jarvis-painel &amp;&amp; python3 coletar.py &amp;&amp; python3 bom_dia.py</pre>
   </div></div>
 
@@ -280,8 +292,9 @@ cd jarvis-painel</pre>
 
   <div class="step"><div class="b">9</div><div>
     <h3>Confira que está tudo certo</h3>
-    <p>Os testes rodam sem internet e conferem a coleta com saídas falsas do <code>systemctl</code>, o item ilegível que vira "exemplo" e o resumo sem Ollama. Precisa do pytest; sem ele, use <code>python3 -m unittest discover tests</code>.</p>
-<pre>python3 -m pytest -q</pre>
+    <p>Os testes rodam sem internet e conferem a coleta com saídas falsas do <code>systemctl</code>, o item ilegível que vira "exemplo" e o resumo sem Ollama. Este comando funciona sem instalar nada:</p>
+<pre>python3 -m unittest discover tests</pre>
+    <p>Se tiver o pytest, também serve <code>python3 -m pytest -q</code>.</p>
   </div></div>
 </div></section>
 

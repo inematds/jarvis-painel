@@ -50,6 +50,8 @@ Quem faz: 🧠 você · ⚙️ script · 🤖 modelo de IA (opcional)
 | 8 | (Opcional) atualizar sozinho a cada 5 min | linha do `crontab` abaixo | ⚙️ |
 | 9 | Pedir uma pesquisa de clientes só lendo, ou consertar a tela | prompts em `prompts/` | 🤖 |
 
+Precisa de Python 3.9+ e do git (no Ubuntu: `sudo apt install git`).
+
 ```bash
 git clone https://github.com/inematds/jarvis-painel.git
 cd jarvis-painel
@@ -58,8 +60,9 @@ python3 bom_dia.py
 python3 -m http.server 8000
 ```
 
-Depois abra `http://localhost:8000` no navegador. Para atualizar sozinho (opcional), rode `crontab -e` e cole
-a linha abaixo, trocando o caminho pela pasta onde você baixou:
+Depois abra `http://localhost:8000` no navegador e deixe esse terminal aberto (Ctrl+C desliga). Para atualizar
+sozinho (opcional), rode `crontab -e` e cole a linha abaixo (vale se o kit está na sua pasta pessoal; troque o
+caminho se baixou em outro lugar). O `coletar.py` acha os seus timers mesmo rodando pelo cron:
 
 ```
 */5 * * * * cd $HOME/jarvis-painel && python3 coletar.py && python3 bom_dia.py
@@ -70,7 +73,7 @@ A página relê o `estado.json` a cada 60 segundos.
 ## Configurar (`config.json`)
 
 Vem configurado para o INEMA: pendências em `~/projetos/wifi/pendencias.md` e duas filas JSON do projeto wifi.
-Troque pelo seu:
+Troque pelo seu (`nano config.json`; se errar uma vírgula, o `coletar.py` diz a linha do erro):
 
 | Campo | O que é |
 |---|---|
@@ -107,8 +110,10 @@ O painel funciona sozinho. Para conversar por voz com um modelo que roda na sua 
 ## Testes
 
 ```bash
-python3 -m pytest -q
+python3 -m unittest discover tests
 ```
+
+(ou `python3 -m pytest -q`, se tiver o pytest)
 
 Rodam sem rede: coleta com saídas do `systemctl` simuladas, item ilegível que vira "exemplo", pendências em markdown,
 filas, modo anônimo e o `bom_dia.py` sem Ollama.

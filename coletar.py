@@ -42,8 +42,12 @@ def rodar(cmd: list[str]) -> str | None:
     """Roda um comando SÓ DE LEITURA e devolve a saída (None se falhar)."""
     if not shutil.which(cmd[0]):
         return None
+    env = dict(os.environ)
+    # no cron não existe a sessão do usuário: sem XDG_RUNTIME_DIR o `systemctl --user` não responde
+    if not env.get("XDG_RUNTIME_DIR") and hasattr(os, "getuid") and Path(f"/run/user/{os.getuid()}").is_dir():
+        env["XDG_RUNTIME_DIR"] = f"/run/user/{os.getuid()}"
     try:
-        r = subprocess.run(cmd, capture_output=True, text=True, timeout=20)
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=20, env=env)
     except (OSError, subprocess.TimeoutExpired):
         return None
     if r.returncode != 0 and not r.stdout.strip():
@@ -342,7 +346,12 @@ def carregar_config(caminho: Path) -> dict:
     if not caminho.exists():
         print(f"(sem {caminho.name}: usando padrão vazio)", file=sys.stderr)
         return {}
-    return json.loads(caminho.read_text(encoding="utf-8"))
+    try:
+        return json.loads(caminho.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as e:
+        raise SystemExit(f"Erro no {caminho.name}, linha {e.lineno}, coluna {e.colno}: {e.msg}.\n"
+                         "Confira vírgulas e aspas (o último item de uma lista ou bloco não leva vírgula). "
+                         f"Dica: python3 -m json.tool {caminho} mostra onde está o erro.")
 
 
 def main(argv=None) -> int:
@@ -354,7 +363,7 @@ def main(argv=None) -> int:
     estado = montar_estado(carregar_config(Path(a.config)), anonimo=a.anonimo)
     Path(a.saida).write_text(json.dumps(estado, ensure_ascii=False, indent=1), encoding="utf-8")
     r = estado["resumo"]
-    print(f"estado.json: {r['sistemas']} sistemas ({r['timers']} timers) · {r['ok']} ok · {r['falhou']} falharam · "
+    print(f"{Path(a.saida).name}: {r['sistemas']} sistemas ({r['timers']} timers) · {r['ok']} ok · {r['falhou']} falharam · "
           f"{r['esperando']} esperando você · {r['exemplos']} exemplos")
     for av in estado["avisos"]:
         print("aviso:", av)

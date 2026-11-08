@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>jarvis-painel — your JARVIS dashboard</title>
-<meta name="description" content="A sci-fi screen that shows your timers, robots, queues, and pending tasks all in one place and says “Bom dia” (Good morning) in Portuguese. It only reads from the machine; nothing is run.">
+<title>jarvis-painel — your Jarvis dashboard</title>
+<meta name="description" content="A sci-fi screen that shows your timers, robots, queues, and pending tasks all in one place, and says good morning in Portuguese. It only reads the machine: nothing is executed.">
 <link rel="alternate" hreflang="pt-BR" href="https://inematds.github.io/jarvis-painel/guia/">
 <link rel="alternate" hreflang="en" href="https://inematds.github.io/jarvis-painel/guia/en/">
 <link rel="alternate" hreflang="es" href="https://inematds.github.io/jarvis-painel/guia/es/">
@@ -132,7 +132,7 @@
     <a class="sec" href="#guia">User guide</a>
     <a class="sec" href="#prompts">Prompts</a>
     <span class="lang"><a href="../">PT</a><a class="on" href="./">EN</a><a href="../es/">ES</a></span>
-    <button class="tgl" id="themeToggle" aria-label="Switch theme" title="Switch theme">🌙</button>
+    <button class="tgl" id="themeToggle" aria-label="Toggle theme" title="Toggle theme">🌙</button>
     <a class="btn" href="https://github.com/inematds/jarvis-painel" target="_blank" rel="noopener">GitHub</a>
   </div>
 </div></nav>
@@ -142,7 +142,7 @@
   <div class="wrap">
     <div>
       <span class="chip">HUD dashboard · read-only · speaks Portuguese</span>
-      <h1>Your robots get to work. One screen shows <span class="amb">everything</span>.</h1>
+      <h1>Your robots are at work. One screen shows <span class="amb">everything</span>.</h1>
       <p class="lead">And says good morning: what ran since yesterday, what failed, what’s waiting for you, and the first thing to do.</p>
       <div class="cta">
         <a class="btn" href="#guia">Start the guide</a>
@@ -154,36 +154,36 @@
 </header>
 
 <section id="resumo" class="resumo"><div class="wrap">
-  <span class="chip">In summary</span>
-  <p>jarvis-painel is a sci-fi-style screen that brings together in one place everything running on its own on your computer: Linux timers, queues, and log files. It is for people who have bots, routines, and queues running but don’t know what each one has done or what is waiting for them. It shows what finished successfully, what failed, and your to-do list, and reads a summary aloud in Portuguese. It only needs Python 3 and a browser; everything runs on your machine, with no key or paid service, and it only reads: the buttons don’t run anything.</p>
+  <span class="chip">In short</span>
+  <p>jarvis-painel is a sci-fi-style screen (a “HUD,” the information panel you see in movies) that brings together, in one place, everything running automatically on your computer: Linux timers, queues, and log files. It’s for people who have bots, routines, and queues running but don’t know what each one has done or what’s waiting for them. It shows what finished successfully, what failed, and your to-do list, and reads a summary aloud in Portuguese. You only need Python 3 and a browser; everything runs on your machine, with no key or paid service, and it only reads data: the buttons don’t run anything.</p>
 </div></section>
 
 <section id="oque"><div class="wrap">
   <span class="chip">What it is</span>
-  <h2>A screen for the robots you can't see</h2>
-  <p class="sub">People who automate tasks end up with dozens of routines running in the background. The dashboard reads them all and shows them in three parts: "Sistemas" (Systems), the core that speaks, and "Esperando você" (Waiting for you).</p>
-  <figure style="margin:0 0 26px;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px -30px #000"><img src="../assets/banner-grade-en.jpg" alt="Banner showing six features: Systems, Waiting for you, voice greeting, Focus mode, Read-only, and Mobile" loading="lazy" style="width:100%;display:block"></figure>
+  <h2>A screen for the robots you can’t see</h2>
+  <p class="sub">People who automate things end up with dozens of routines running in the background. The dashboard reads them all and shows them in three sections: Systems, the core that speaks, and "Esperando você" (Waiting for you).</p>
+  <figure style="margin:0 0 26px;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px -30px #000"><img src="../assets/banner-grade-en.jpg" alt="Banner with six features: Systems, Waiting for you, Good morning by voice, Focus mode, Read only, and Mobile phone" loading="lazy" style="width:100%;display:block"></figure>
 
-  <p class="sub" style="margin-bottom:12px">Actually read on an INEMA machine on Nov 8, 2026, at 07:49:</p>
+  <p class="sub" style="margin-bottom:12px">Actually read on an INEMA machine on Nov 8, 2026, at 08:18 (the numbers will be different on your machine and change every hour):</p>
   <div class="nums">
-    <div><b>62</b><span>systems read (53 timers, 6 services without timers, 3 queues and logs)</span></div>
-    <div><b>38</b><span>finished successfully</span></div>
-    <div><b class="al">11</b><span>with errors (the same count in the core and in the list)</span></div>
-    <div><b>42</b><span>waiting for you (11 errors, 30 pending items, 1 queue)</span></div>
+    <div><b>62</b><span>systems read (53 timers, 6 services without timers, 3 queues, and logs)</span></div>
+    <div><b>40</b><span>finished successfully</span></div>
+    <div><b class="al">11</b><span>failed (the same count in the core and the list)</span></div>
+    <div><b>42</b><span>waiting for you (11 failures, 30 pending items, 1 queue)</span></div>
   </div>
-  <figure class="tela"><img src="../assets/painel-desktop.jpg" alt="The dashboard on a computer: Systems on the left, JARVIS core with rings and a wave in the middle, Waiting for you on the right, shortcut bar at the bottom" loading="lazy"><figcaption>The dashboard saying good morning: the wave around the core follows the speech, and the text appears as it is typed below. Pending items were replaced with "Pendência N" (Pending item N) in <code>--anonimo</code> mode for this screenshot.</figcaption></figure>
+  <figure class="tela"><img src="../assets/painel-desktop.jpg" alt="The dashboard on a computer: Systems on the left, the JARVIS core with rings and a wave in the middle, Waiting for you on the right, and a shortcut bar at the bottom" loading="lazy"><figcaption>The dashboard saying good morning: the wave around the core follows the speech, and the text appears as if typed below. The pending items were replaced with "Pendência N" (Pending item N) in <code>--anonimo</code> mode for this screenshot.</figcaption></figure>
 
   <div class="grid g3">
-    <div class="card"><h3>🛰️ Everything in one place</h3><p>Linux timers with each one's latest result, failed services, JSON queues, logs, and your Markdown file of pending items.</p></div>
-    <div class="card"><h3>🔊 It speaks to you</h3><p>"Bom dia" (Good morning), "Status" (Status), "O que espera" (What's waiting), and "Modo foco" (Focus mode). Voice in Portuguese from the browser itself, with no paid service.</p></div>
-    <div class="card"><h3>🔒 Read-only</h3><p>"Aprovar" (Approve) and "Depois" (Later) only mark items on the screen. Nothing is started, stopped, deleted, or sent. Anything that couldn't be read appears as "exemplo" (example).</p></div>
+    <div class="card"><h3>🛰️ Everything in one place</h3><p>Linux timers with the latest result from each one, failed services, JSON queues, logs, and your markdown file of pending items.</p></div>
+    <div class="card"><h3>🔊 Talks to you</h3><p>"Bom dia" (Good morning), "Status" (Status), "O que espera" (What’s waiting), and "Modo foco" (Focus mode). Voice in Portuguese from the browser itself, with no paid service.</p></div>
+    <div class="card"><h3>🔒 Read only</h3><p>"Aprovar" (Approve) and "Depois" (Later) only mark items on the screen. Nothing is started, stopped, deleted, or sent. Anything it couldn’t read appears as "exemplo" (example).</p></div>
   </div>
 </div></section>
 
 <section id="fluxo"><div class="wrap">
   <span class="chip">How it works</span>
   <h2>Two scripts and a page</h2>
-  <p class="sub"><code>coletar.py</code> reads the machine and saves <code>estado.json</code>. <code>bom_dia.py</code> writes the summary. The page reads both and draws the screen.</p>
+  <p class="sub"><code>coletar.py</code> reads the machine and writes to <code>estado.json</code>. <code>bom_dia.py</code> writes the summary. The page reads both and draws the screen.</p>
   <div class="flow">
     <span>config.json</span><span class="arr">→</span>
     <span>coletar.py</span><span class="arr">→</span>
@@ -193,30 +193,31 @@
     <span>you</span>
   </div>
   <div class="grid g3" style="margin-top:26px">
-    <div class="card"><h3>Central core</h3><p>Three rings spinning at different speeds, pulsing light, the name JARVIS, and a status line. Startup takes about 3 seconds: "Inicializando… Sistemas no ar." (“Initializing… Systems online.”) "Bom dia" (“Good morning”), Nei.</p></div>
-    <div class="card"><h3>Systems (left)</h3><p>Each timer, service, and queue has a dot and a status word: ok, failed, running, or waiting. Below, see when it last ran and what it does.</p></div>
-    <div class="card"><h3>"Esperando você" (“Waiting for you”) (right)</h3><p>First, what failed, then items from your file and items stopped in queues. "Aprovar" (“Approve”) and "Depois" (“Later”) buttons that only mark them on screen.</p></div>
-    <div class="card"><h3>Top bar</h3><p>Clock, date, and the "Voz: ligada" (“Voice: on”) badge. Click the badge to turn off the voice.</p></div>
-    <div class="card"><h3>Command bar</h3><p>"Bom dia" (“Good morning”) · "Status" (“Status”) · "O que espera" (“What's waiting”) · "Modo foco" (“Focus mode”), also on keys 1, 2, 3, and 4. Focus mode dims the panels and leaves only the core.</p></div>
-    <div class="card"><h3>Colors</h3><p>Cyan and icy white on navy blue; amber only for alerts. Rings at 60 frames per second and no horizontal scrolling on mobile.</p></div>
+    <div class="card"><h3>Central core</h3><p>Three rings spinning at different speeds, pulsing light, the name JARVIS, and a status line. Startup takes about 3 seconds: "Inicializando… Sistemas no ar." (Initializing… Systems online.) "Bom dia" (Good morning), Nei.</p></div>
+    <div class="card"><h3>Systems (left)</h3><p>Each timer, service, and queue has a dot and a status word: ok, failed, running, or waiting. Below, see how long ago it ran and what it does.</p></div>
+    <div class="card"><h3>"Esperando você" (Waiting for you) (right)</h3><p>First, anything that failed, then the pending items in your file and items waiting in queues. "Aprovar" (Approve) and "Depois" (Later) buttons, which only mark items on the screen.</p></div>
+    <div class="card"><h3>Top</h3><p>Clock, date, and the "Voz: ligada" (Voice: on) badge. Click the badge to turn off the voice.</p></div>
+    <div class="card"><h3>Command bar</h3><p>"Bom dia" (Good morning) · "Status" (Status) · "O que espera" (What’s waiting) · "Modo foco" (Focus mode), also on keys 1, 2, 3, and 4. Focus dims the panels and leaves only the core.</p></div>
+    <div class="card"><h3>Colors</h3><p>Ice cyan and white on navy; amber only for alerts. Rings at 60 frames per second and no horizontal scrolling on mobile.</p></div>
   </div>
 </div></section>
 
 <section id="pre"><div class="wrap">
   <span class="chip">Prerequisites</span>
-  <h2>What you need first</h2>
-  <p class="sub">Nothing to install except Python. Ollama is optional.</p>
+  <h2>What you need beforehand</h2>
+  <p class="sub">Nothing to install besides Python. Ollama is optional.</p>
   <div class="grid g3">
-    <div class="card"><h3>Python 3.9 or newer</h3><p>It comes with Ubuntu and Mac. Check the version:</p><pre>python3 --version</pre></div>
-    <div class="card"><h3>Linux with systemd (for real data)</h3><p>The timers come from <code>systemctl --user</code>. Without it (on Mac, for example), the systems appear as "exemplo" (example); pending items and queues are still real.</p><pre>systemctl --user list-timers</pre></div>
-    <div class="card"><h3>Browser and, if you want, Ollama</h3><p>Chrome, Edge, or Firefox. pt-BR voice depends on your system voices. Ollama is only used for a more natural summary.</p><pre>ollama list</pre></div>
+    <div class="card"><h3>Python 3.9 or newer and git</h3><p>Python comes with Ubuntu and Mac. Git (which downloads the toolkit) doesn’t always: on Ubuntu, install it with <code>sudo apt install git</code>. Check both:</p><pre>python3 --version
+git --version</pre></div>
+    <div class="card"><h3>Linux with systemd (for real data)</h3><p>A timer is a task that runs on its own at a set time (Linux’s “scheduler,” called systemd). Timers come from <code>systemctl --user</code>. Without it (on Mac, for example), systems appear as “example”; pending items and queues remain real.</p><pre>systemctl --user list-timers</pre></div>
+    <div class="card"><h3>Browser and, if you like, Ollama</h3><p>Chrome, Edge, or Firefox. The pt-BR voice depends on your system’s voices. Ollama is a free program that runs an AI model on your own computer (installation at ollama.com); here, it just makes the summary more natural. If you have it, this command lists the models:</p><pre>ollama list</pre></div>
   </div>
 </div></section>
 
 <section id="guia"><div class="wrap">
-  <span class="chip">User guide · step by step</span>
-  <h2>From zero to "Bom dia" (Good morning) in 5 minutes</h2>
-  <p class="sub">Every command below was run on a real machine. Paste them into the terminal one block at a time.</p>
+  <span class="chip">Usage guide · step by step</span>
+  <h2>From scratch to "Bom dia" (Good morning) in 5 minutes</h2>
+  <p class="sub">Every command below was run on a real machine. Paste it into the terminal, one block at a time.</p>
 
   <div class="step"><div class="b">1</div><div>
     <h3>Download the kit</h3>
@@ -226,8 +227,17 @@ cd jarvis-painel</pre>
   </div></div>
 
   <div class="step"><div class="b">2</div><div>
-    <h3>Tell it who you are and where your pending tasks are</h3>
-    <p>The <code>config.json</code> is set up for INEMA (a section is shown below). Open it in an editor and replace the name, pending tasks file, and queues with your own. If you don't have any queues, leave the list empty: <code>"fontes_extras": []</code>.</p>
+    <h3>Say who you are and where your pending tasks are</h3>
+    <p>The <code>config.json</code> is set up for INEMA. Open it in the terminal editor (save with Ctrl+O, Enter, then exit with Ctrl+X):</p>
+<pre>nano config.json</pre>
+    <p>The simplest option is to delete everything and paste this, changing the name and path to your pending tasks file (if you don’t have one, leave it as is: the panel shows an "exemplo" (example) in its place):</p>
+<pre>{
+  "nome": "Marta",
+  "pendencias": { "arquivo": "~/pendencias.md", "parar_em": "Resolvidas" },
+  "fontes_extras": [],
+  "ignorar": ["snap.*", "run-u*", "*.scope"]
+}</pre>
+    <p>The INEMA version included in the kit also reads two task queues and a log:</p>
 <pre>{
   "nome": "Nei",
   "pendencias": { "arquivo": "~/projetos/wifi/pendencias.md", "parar_em": "Resolvidas" },
@@ -237,38 +247,40 @@ cd jarvis-painel</pre>
   ],
   "ignorar": ["snap.*", "run-u*", "*.scope"]
 }</pre>
-    <p>In the pending tasks file, each line starting with <code>- **title**</code> or <code>### title</code> becomes an item, up to the <code>## Resolvidas</code> section.</p>
+    <p>In the pending tasks file, each line that starts with <code>- **title**</code> or <code>### title</code> becomes an item, up to the <code>## Resolvidas</code> section.</p>
   </div></div>
 
   <div class="step"><div class="b">3</div><div>
-    <h3>Check the machine</h3>
+    <h3>Check the system</h3>
     <p>Read-only: timers, the latest result from each service, failures, pending tasks, and queues. The final line summarizes what it found.</p>
 <pre>python3 coletar.py</pre>
-    <p>On the INEMA machine, it showed: <code>estado.json: 62 systems (53 timers) · 38 ok · 11 failed · 42 waiting for you · 0 examples</code>.</p>
+    <p>On the INEMA machine, the terminal showed (the script writes in Portuguese):</p>
+<pre>estado.json: 62 sistemas (53 timers) · 40 ok · 11 falharam · 42 esperando você · 0 exemplos</pre>
+    <p>If there’s a typo in <code>config.json</code>, the script gives the line and column where the error occurred.</p>
   </div></div>
 
   <div class="step"><div class="b">4</div><div>
     <h3>Write the morning summary</h3>
-    <p>Uses fixed rules, no AI: what the robots did since yesterday, what is waiting for you, and the first thing to do. Saves it to <code>bom_dia.txt</code>.</p>
+    <p>Based on fixed rules, with no AI: what the robots did since yesterday, what you’re waiting on, and the first thing to do. Saves to <code>bom_dia.txt</code>.</p>
 <pre>python3 bom_dia.py</pre>
-    <p>With Ollama running, the local model makes the text sound more natural without changing the numbers (the model is set in <code>config.json</code>; if Ollama doesn't respond, it uses the rule-based text). On the INEMA machine, it took 17.5 seconds with qwen3.8:27b.</p>
+    <p>With Ollama running, the local model makes the text sound more natural without changing the numbers (the model is set in <code>config.json</code>; if Ollama doesn’t respond, the rule-based text remains). On the INEMA machine, it took 17,5 seconds with qwen3.8:27b.</p>
 <pre>python3 bom_dia.py --ollama</pre>
   </div></div>
 
   <div class="step"><div class="b">5</div><div>
-    <h3>Open the screen</h3>
-    <p>The page needs a local server to read <code>estado.json</code>. Then open <code>http://localhost:8000</code> in your browser. It rereads the status every 60 seconds.</p>
+    <h3>Open the page</h3>
+    <p>The page needs a local server to read <code>estado.json</code>. Then open <code>http://localhost:8000</code> in your browser. It rereads the state every 60 seconds. Leave this terminal open: if you close it, the page stops updating (to shut it down, press Ctrl+C).</p>
 <pre>python3 -m http.server 8000</pre>
   </div></div>
 
   <div class="step"><div class="b">6</div><div>
     <h3>Use the shortcuts</h3>
-    <p>Click or press keys 1 to 4: <strong>"Bom dia" (Good morning)</strong>, <strong>"Status" (Status)</strong>, <strong>"O que espera" (What's waiting for you)</strong>, and <strong>"Modo foco" (Focus mode)</strong>. Under "Esperando você" (Waiting for you), <strong>"Aprovar" (Approve)</strong> and <strong>"Depois" (Later)</strong> only mark items on the screen and are saved in this browser; <strong>"Desfazer" (Undo)</strong> removes the mark. Nothing is run.</p>
+    <p>Click or press keys 1 to 4: <strong>"Bom dia" (Good morning)</strong>, <strong>"Status"</strong>, <strong>"O que espera" (What you’re waiting on)</strong>, and <strong>"Modo foco" (Focus mode)</strong>. Under "Esperando você" (Waiting for you), <strong>"Aprovar" (Approve)</strong> and <strong>"Depois" (Later)</strong> only mark items on the screen and are saved in this browser; <strong>"Desfazer" (Undo)</strong> removes the mark. Nothing is run.</p>
   </div></div>
 
   <div class="step"><div class="b">7</div><div>
     <h3>Update automatically (optional)</h3>
-    <p>Open the scheduler with <code>crontab -e</code> and paste the line below, replacing the path with the folder where you downloaded the kit. Every 5 minutes, it rereads the machine and rewrites the summary.</p>
+    <p>Open the scheduler with <code>crontab -e</code> and paste the line below at the end of the file. It works if you downloaded the kit to your home folder (change the path if you downloaded it somewhere else). Every 5 minutes it rereads the system and rewrites the summary; <code>coletar.py</code> finds your timers even when run by cron.</p>
 <pre>*/5 * * * * cd $HOME/jarvis-painel &amp;&amp; python3 coletar.py &amp;&amp; python3 bom_dia.py</pre>
   </div></div>
 
@@ -279,46 +291,47 @@ cd jarvis-painel</pre>
   </div></div>
 
   <div class="step"><div class="b">9</div><div>
-    <h3>Check that everything is working</h3>
-    <p>The tests run offline and check data collection with fake <code>systemctl</code> output, an unreadable item that becomes "exemplo" (example), and the summary without Ollama. You need pytest; if you don't have it, use <code>python3 -m unittest discover tests</code>.</p>
-<pre>python3 -m pytest -q</pre>
+    <h3>Make sure everything is working</h3>
+    <p>The tests run offline and check data collection with fake <code>systemctl</code> output, an unreadable item that becomes "exemplo" (example), and the summary without Ollama. This command works without installing anything:</p>
+<pre>python3 -m unittest discover tests</pre>
+    <p>If you have pytest, <code>python3 -m pytest -q</code> works too.</p>
   </div></div>
 </div></section>
 
 <section id="exemplos"><div class="wrap">
   <span class="chip">On screen</span>
-  <h2>The startup, the phone, Approve, and focus</h2>
-  <p class="sub">Screenshots from the same machine, with pending items in anonymous mode. The interface and the voice are in Portuguese.</p>
+  <h2>The startup, the phone, “Aprovar” (“Approve”), and focus</h2>
+  <p class="sub">Screenshots from the same machine, with tasks in anonymous mode. The interface and the voice are in Portuguese.</p>
   <div class="ex">
-    <figure><img src="../assets/painel-partida.jpg" alt="Startup: the core appears with rings and the text “Inicializando… Sistemas no ar.” (Initializing… Systems online.) (62 read)" loading="lazy"><figcaption>Startup takes about 3 seconds: “Inicializando… Sistemas no ar.” (Initializing… Systems online.) followed by “Bom dia, Nei.” (Good morning, Nei.)</figcaption></figure>
-    <figure><img src="../assets/painel-aprovado.jpg" alt="“Esperando você” (Waiting for you) dashboard with an item marked “Aprovado (só na tela)” (Approved on screen only) and the “Desfazer” (Undo) button" loading="lazy"><figcaption>Approve only marks the item on screen: it dims and shows “Aprovado (só na tela)” (Approved on screen only) and the “Desfazer” (Undo) button.</figcaption></figure>
-    <figure><img src="../assets/painel-foco.jpg" alt="“Modo foco” (Focus mode): the side panels are dimmed and only the core is lit" loading="lazy"><figcaption>“Modo foco” (Focus mode): the panels dim and the core stands alone.</figcaption></figure>
-    <figure><img src="../assets/painel-celular.jpg" alt="The dashboard on a phone: core at the top, counters, lists, and the shortcut bar fixed at the bottom" loading="lazy"><figcaption>On a phone (390 px): no horizontal scrolling, with the shortcut bar fixed at the bottom.</figcaption></figure>
+    <figure><img src="../assets/painel-partida.jpg" alt="Startup: the core appears with the rings and the text “Inicializando… Sistemas no ar.” (“Initializing… Systems online.”) (62 read)" loading="lazy"><figcaption>Startup takes about 3 seconds: “Inicializando… Sistemas no ar.” (“Initializing… Systems online.”), then “Bom dia” (“Good morning”), Nei.</figcaption></figure>
+    <figure><img src="../assets/painel-aprovado.jpg" alt="“Esperando você” (“Waiting for you”) panel with an item marked “Aprovado (só na tela)” (“Approved (on screen only)”) and the “Desfazer” (“Undo”) button" loading="lazy"><figcaption>“Aprovar” (“Approve”) only marks the item on screen: it dims with “Aprovado (só na tela)” (“Approved (on screen only)”) and the “Desfazer” (“Undo”) button.</figcaption></figure>
+    <figure><img src="../assets/painel-foco.jpg" alt="“Modo foco” (“Focus mode”): side panels dimmed and only the core lit up" loading="lazy"><figcaption>“Modo foco” (“Focus mode”): the panels dim and the core is left alone.</figcaption></figure>
+    <figure><img src="../assets/painel-celular.jpg" alt="The panel on a phone: core at the top, counters, lists, and the shortcut bar fixed at the bottom" loading="lazy"><figcaption>On a phone (390 px): no horizontal scrolling, with the shortcut bar fixed at the bottom.</figcaption></figure>
   </div>
 </div></section>
 
 <section id="prompts"><div class="wrap">
   <span class="chip">Ready-made prompts</span>
-  <h2>Three prompts to copy</h2>
-  <p class="sub">They’re in the <code>prompts/</code> folder (and in English and Spanish in <code>prompts/en/</code> and <code>prompts/es/</code>).</p>
+  <h2>Three prompts to copy and paste</h2>
+  <p class="sub">They’re in the <code>prompts/</code> folder (with English and Spanish versions in <code>prompts/en/</code> and <code>prompts/es/</code>).</p>
   <div class="grid g3">
-    <div class="card"><h3>Jarvis’s personality</h3><p>Paste this at the start of a conversation with a model: use simple English, short sentences, only the numbers from the panel, say "I don’t know" when information is missing, and never take action on your own. File <code>prompts/en/jarvis-personalidade.md</code>.</p></div>
+    <div class="card"><h3>Jarvis’s personality</h3><p>Paste this at the start of a conversation with a model: English, short sentences, only use the numbers from the dashboard, say "I don’t know" when data is missing, and never do anything on its own. File <code>prompts/en/jarvis-personalidade.md</code>.</p></div>
     <div class="card"><h3>Customer research, read-only</h3><p>For Claude Code with a browser. Change the industry and city. File <code>prompts/en/pesquisa-clientes.md</code>.</p>
-<pre class="prompt">Find &lt;industry&gt; in &lt;city&gt;. Open the first 3 sites that appear.
+<pre class="prompt">Search for &lt;industry&gt; in &lt;city&gt;. Open the first 3 sites that appear.
 Make a table with: name, website, phone number, and one thing the site does poorly.
 Rules: only read. Don’t contact anyone or fill out any forms.</pre></div>
-    <div class="card"><h3>Fix the screen</h3><p>If the panel opens blank or shows an error, open Claude Code or Codex in the folder, paste in the request and the console error (F12 key). File <code>prompts/en/conserta-tela.md</code>.</p></div>
+    <div class="card"><h3>Fix the dashboard</h3><p>If the dashboard opens to a blank screen or with an error, open Claude Code or Codex in the folder, paste the request and the console error (F12 key). File <code>prompts/en/conserta-tela.md</code>.</p></div>
   </div>
-  <div class="aviso" style="margin-top:26px">Want to talk by voice with a model running on your GPU? The panel works on its own, and the companion kit <a href="https://inematds.github.io/jarvis-local/guia/" target="_blank" rel="noopener"><strong>jarvis-local</strong></a> adds listening and speaking. Use <code>prompts/en/jarvis-personalidade.md</code> as its instructions.</div>
+  <div class="aviso" style="margin-top:26px">Want to talk by voice with a model running on your GPU? The dashboard works on its own, and the sibling kit <a href="https://inematds.github.io/jarvis-local/guia/" target="_blank" rel="noopener"><strong>jarvis-local</strong></a> adds hearing and speech. Use <code>prompts/en/jarvis-personalidade.md</code> as its instructions.</div>
 </div></section>
 
 <section id="roadmap"><div class="wrap">
   <span class="chip">Limits and next steps</span>
-  <h2>What it does today and what it doesn’t do</h2>
-  <p class="sub">So you know what to expect before using it every day.</p>
-  <div class="phase"><div class="tag">Today</div><div class="d"><strong>Version 1.0</strong><span>Reads the user’s systemd timers and services, Markdown tasks, JSON queues, and logs. Speaks using the browser’s voice. Summarizes using rules and, optionally, Ollama.</span></div></div>
-  <div class="phase"><div class="tag">Doesn’t do</div><div class="d"><strong>No actions on the machine</strong><span>It doesn’t start, stop, or restart services; “Aprovar” (Approve) and “Depois” (Later) don’t do anything beyond the browser. System (root) timers and cron jobs don’t appear.</span></div></div>
-  <div class="phase"><div class="tag">Voice</div><div class="d"><strong>Depends on the browser</strong><span>Some browsers only speak after the first click on the page. If no pt-BR voice is installed, the text appears typed the same way.</span></div></div>
+  <h2>What it does today and what it doesn’t</h2>
+  <p class="sub">So you know what to expect before using it day to day.</p>
+  <div class="phase"><div class="tag">Today</div><div class="d"><strong>Version 1.0</strong><span>Reads the user’s systemd timers and services, pending items in markdown, JSON queues, and logs. Speaks using the browser’s voice. Summaries are generated by rules and, optionally, by Ollama.</span></div></div>
+  <div class="phase"><div class="tag">Doesn’t do</div><div class="d"><strong>No actions on the machine</strong><span>It doesn’t start, stop, or restart services; "Aprovar" (Approve) and "Depois" (Later) go nowhere beyond the browser. System timers (root) and cron jobs don’t appear.</span></div></div>
+  <div class="phase"><div class="tag">Voice</div><div class="d"><strong>Depends on the browser</strong><span>Some browsers only speak after the first click on the page. If no pt-BR voice is installed, the text still appears on screen.</span></div></div>
   <div class="phase"><div class="tag">Idea</div><div class="d"><strong>More sources</strong><span>Read cron and system timers, and Docker containers. Not available yet.</span></div></div>
 </div></section>
 

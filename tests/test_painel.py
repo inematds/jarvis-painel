@@ -123,6 +123,22 @@ class TesteColeta(unittest.TestCase):
         self.assertTrue(pend[0]["titulo"].startswith("exemplo"))
         self.assertEqual(estado["resumo"]["exemplos"], 3)
 
+    def test_cron_sem_sessao_acha_systemctl_user(self):
+        import os
+        from unittest import mock
+        visto = {}
+
+        def falso_run(cmd, **kw):
+            visto.update(kw.get("env") or {})
+            return mock.Mock(returncode=0, stdout="[]")
+        with mock.patch.dict(os.environ, {}, clear=False), \
+             mock.patch("coletar.shutil.which", return_value="/usr/bin/systemctl"), \
+             mock.patch("coletar.subprocess.run", side_effect=falso_run), \
+             mock.patch("coletar.Path.is_dir", return_value=True):
+            os.environ.pop("XDG_RUNTIME_DIR", None)
+            coletar.rodar(["systemctl", "--user", "list-timers"])
+        self.assertEqual(visto.get("XDG_RUNTIME_DIR"), f"/run/user/{os.getuid()}")
+
     def test_pendencias_markdown(self):
         md = """# Pendências
 - **08/11/2026 — Responder o cliente.** detalhe longo
@@ -182,6 +198,24 @@ class TesteBomDia(unittest.TestCase):
             rc = bom_dia.main(["--estado", str(e), "--config", str(cfg), "--saida", str(saida), "--ollama"])
             self.assertEqual(rc, 0)
             self.assertIn("Ana", saida.read_text(encoding="utf-8"))
+
+    def test_bom_dia_singular(self):
+        agora = datetime.fromtimestamp(1794134000).astimezone().replace(hour=9)
+        estado = {"nome": "Ana", "sistemas": [{"nome": "r", "estado": "ok", "ultima": agora.isoformat()}],
+                  "esperando": [{"titulo": "Pagar a conta", "tipo": "pendencia"}]}
+        texto = bom_dia.resumo_por_regra(estado, agora=agora)
+        self.assertIn("1 robô trabalhou e 1 terminou bem", texto)
+        self.assertIn("Esperando você: 1 item (1 pendência).", texto)
+        self.assertIn("A primeira coisa a fazer: Pagar a conta.", texto)
+        self.assertNotIn("0 falhas", texto)
+
+    def test_config_invalido_explica(self):
+        with tempfile.TemporaryDirectory() as d:
+            c = Path(d) / "config.json"
+            c.write_text('{"nome": "x",}', encoding="utf-8")
+            with self.assertRaises(SystemExit) as e:
+                coletar.carregar_config(c)
+        self.assertIn("linha 1", str(e.exception))
 
     def test_bom_dia_sem_estado(self):
         self.assertEqual(bom_dia.main(["--estado", "/nao/existe.json"]), 1)

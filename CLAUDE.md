@@ -18,6 +18,8 @@ When I correct you, or you catch yourself making a mistake: before continuing, a
 at the TOP of the ## Lessons section below, so it never happens again.
 
 ## Lessons
+- Cron não tem XDG_RUNTIME_DIR: `systemctl --user` falha e tudo vira "exemplo". O `rodar()` do coletar.py preenche `/run/user/<uid>`; testar com `env -i HOME=… PATH=/usr/bin:/bin`. (08/11/2026)
+- Texto falado tem de concordar no singular ("1 terminou bem", "1 item") e explicar janela de tempo (24 h) quando o número difere do total da tela. (08/11/2026)
 - `resumo.falhou` e "Esperando você" têm de contar as MESMAS falhas (timers + serviços sem timer + filas com erro); antes o núcleo dizia 5 e a lista 10. (08/11/2026)
 - `id` de pendência é hash do título: id com o texto vazava o título no modo `--anonimo`. (08/11/2026)
 - `backdrop-filter`/`filter: blur` nos painéis derrubava o canvas para 25–35 fps em 1920 px; brilho dos anéis com traço largo translúcido, sem `shadowBlur`. (08/11/2026)

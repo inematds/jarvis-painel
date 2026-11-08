@@ -45,23 +45,31 @@ def resumo_por_regra(estado: dict, agora: datetime | None = None) -> str:
     hora = agora.hour
     saudacao = "Bom dia" if hora < 12 else ("Boa tarde" if hora < 18 else "Boa noite")
 
+    def n(qtd: int, um: str, varios: str) -> str:
+        return f"{qtd} {um if qtd == 1 else varios}"
+
     linhas = [f"{saudacao}, {nome}."]
+    if sistemas:
+        linhas.append(f"No painel: {n(len(sistemas), 'sistema', 'sistemas')}, "
+                      f"{n(sum(1 for s in sistemas if s.get('estado') == 'ok'), 'ok', 'ok')} e {len(falhas)} com falha.")
     if recentes:
-        linhas.append(f"Desde ontem, {len(recentes)} robôs trabalharam e {len(ok)} terminaram bem.")
+        linhas.append(f"Nas últimas 24 horas, {n(len(recentes), 'robô trabalhou', 'robôs trabalharam')} e "
+                      f"{n(len(ok), 'terminou bem', 'terminaram bem')}.")
     else:
         linhas.append("Não vi nenhum robô trabalhando nas últimas 24 horas.")
     if falhas:
         nomes = ", ".join(s["nome"] for s in falhas[:3])
-        linhas.append(f"Com falha agora: {len(falhas)} — {nomes}" + (f" e mais {len(falhas) - 3}." if len(falhas) > 3 else "."))
-    else:
-        linhas.append("Nenhum com falha.")
+        linhas.append(f"Com falha: {nomes}" + (f" e mais {len(falhas) - 3}." if len(falhas) > 3 else "."))
 
     falhas_esp = [e for e in esperando if e.get("tipo") == "falha"]
     pend = [e for e in esperando if e.get("tipo") == "pendencia"]
     filas = [e for e in esperando if e.get("tipo") == "fila"]
     if esperando:
-        partes = [f"{len(falhas_esp)} falhas", f"{len(pend)} pendências"] + ([f"{len(filas)} fila" + ("s" if len(filas) > 1 else "")] if filas else [])
-        linhas.append(f"Esperando você: {len(esperando)} itens (" + ", ".join(partes[:-1]) + " e " + partes[-1] + ").")
+        partes = [p for p in (n(len(falhas_esp), "falha", "falhas") if falhas_esp else "",
+                              n(len(pend), "pendência", "pendências") if pend else "",
+                              n(len(filas), "fila", "filas") if filas else "") if p]
+        lista = partes[0] if len(partes) == 1 else ", ".join(partes[:-1]) + " e " + partes[-1]
+        linhas.append(f"Esperando você: {n(len(esperando), 'item', 'itens')} ({lista}).")
     else:
         linhas.append("Nada esperando você. Dia livre para criar.")
 
